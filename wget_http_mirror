@@ -1,0 +1,17 @@
+#!/bin/sh
+
+SITE="http://www.lua.org/pil/"
+
+MIRROR_DIR=.
+
+wget -c -m --page-requisites --level=1 --wait 3 -nH \
+--cut-dirs=1 -P$MIRROR_DIR --dot-style=binary $SITE 
+
+# -c continue retrieval
+# -m mirror == infinite recursion, timestamping, don't remove .listing files
+# -w wait X number of seconds
+# -nd no directories, don't create directories, duplicate files will be named
+# sequentially
+# -P use this directory to save in
+# --page-requisites This option causes Wget to download all the files that are
+# necessary to properly display a given HTML page.

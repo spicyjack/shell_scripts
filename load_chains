@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# set up some shell variables
+src_ip="0.0.0.0/0"
+ext_eth="eth1"
+extra_opts="-j DENY -l"
+
+# smb/nmb
+/sbin/ipchains -A input -i $ext_eth -p tcp $extra_opts -s $src_ip 139
+/sbin/ipchains -A input -i $ext_eth -p tcp $extra_opts -s $src_ip 137
+/sbin/ipchains -A input -i $ext_eth -p udp $extra_opts -s $src_ip 137
+/sbin/ipchains -A input -i $ext_eth -p udp $extra_opts -s $src_ip 138
+
+# swat, the samba admin tool
+/sbin/ipchains -A input -i $ext_eth -p tcp $extra_opts -s $src_ip 901 
+
+# squid 
+/sbin/ipchains -A input -i $ext_eth -p tcp $extra_opts -s $src_ip 3128
+/sbin/ipchains -A input -i $ext_eth -p udp $extra_opts -s $src_ip 3130
+
+#route
+/sbin/ipchains -A input -i $ext_eth -p udp $extra_opts -s $src_ip 520
+
+#lpd
+/sbin/ipchains -A input -i $ext_eth -p tcp $extra_opts -s $src_ip 515
+
+#imap
+/sbin/ipchains -A input -i $ext_eth -p tcp $extra_opts -s $src_ip 143
+
+#rpc/nfs
+/sbin/ipchains -A input -i $ext_eth -p tcp $extra_opts -s $src_ip 111
+/sbin/ipchains -A input -i $ext_eth -p udp $extra_opts -s $src_ip 111
+/sbin/ipchains -A input -i $ext_eth -p tcp $extra_opts -s $src_ip 635
+/sbin/ipchains -A input -i $ext_eth -p udp $extra_opts -s $src_ip 635
+/sbin/ipchains -A input -i $ext_eth -p tcp $extra_opts -s $src_ip 2049
+/sbin/ipchains -A input -i $ext_eth -p udp $extra_opts -s $src_ip 2049
+
+#time
+/sbin/ipchains -A input -i $ext_eth -p tcp $extra_opts -s $src_ip 37
+/sbin/ipchains -A input -i $ext_eth -p udp $extra_opts -s $src_ip 37
+/sbin/ipchains -A input -i $ext_eth -p udp -s 130.191.3.100 123 # rohan
+/sbin/ipchains -A input -i $ext_eth -p udp -s 132.239.254.205 123 # ucsd #1
+/sbin/ipchains -A input -i $ext_eth -p udp -s 132.239.254.5 123 # ucsd #2
+/sbin/ipchains -A input -i $ext_eth -p udp -s 131.216.16.9  123 # unlv 
+/sbin/ipchains -A input -i $ext_eth -p udp $extra_opts -s $src_ip 123
+

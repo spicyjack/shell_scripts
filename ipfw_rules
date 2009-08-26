@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# set up some variables
+ETH1="24.0.130.220"
+INET="0.0.0.0"
+
+
+# sets all of the firewall rules
+
+#echo
+#echo Start IP Forwarding...
+#install the separate moules
+/sbin/modprobe ip_masq_ftp
+/sbin/modprobe ip_masq_raudio
+/sbin/modprobe ip_masq_icq
+/sbin/modprobe ip_masq_irc
+/sbin/modprobe ip_masq_quake
+
+echo Reset and enforce the IP firewall rules
+echo
+echo Reset Input rules
+/sbin/ipfwadm -I -f
+echo Reset Output rules
+/sbin/ipfwadm -O -f
+echo Reset Forwarding rules
+/sbin/ipfwadm -F -f
+echo Set default forwarding policy to deny
+/sbin/ipfwadm -F -p deny
+echo Set internal Masquerading...
+/sbin/ipfwadm -F -a m -S 192.168.1.0/24 -D 0.0.0.0/0
+# /sbin/ipfwadm -F -a m -S 10.0.0.0/24 -D 0.0.0.0/0
+
+echo Set up for Battle.net
+/sbin/ipportfw -A -t24.0.130.220/116 -R 192.168.1.254/116
+/sbin/ipportfw -A -t24.0.130.220/118 -R 192.168.1.254/118
+/sbin/ipportfw -A -u24.0.130.220/6112 -R 192.168.1.254/6112
+/sbin/ipportfw -A -u24.0.130.220/2213 -R 192.168.1.254/2213
+#echo End IP Masq Section
+

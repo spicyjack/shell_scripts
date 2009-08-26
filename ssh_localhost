@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# starts up ssh, and sets up forwarding between observer and here...
+#
+
+/usr/local/bin/ssh -o user=root -v -C \
+localhost
+#-R 2223:localhost:22 \
+#-L 6667:irc.home.com:6667 \
+

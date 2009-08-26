@@ -1,0 +1,100 @@
+#!/bin/sh
+
+#David Beccue made some modifications to the changenet script I wrote.
+#Here are David's changes plus a few of mine. There was a problem with
+#one part, where you "cp -f /etc/sysconfig/networK-scripts/ifcfg-eth0.cpp\
+#/etc/sysconfig/network-scripts/ifcfg-eth0". Because of the way the 
+#network init scripts parse this file, you have the change it from 
+#ifcfg-eth0.cpp to cpp.ifcfg-eth0 and ifcfg-eth0.home to home.ifcfg-eth0
+#Thanks also the Mike Marion for finding the typo. This script will 
+#probably be usefull to run on all the systems we have for the Expo,
+#that will be running Linux. It makes it much easier to change your
+#network configuration. If you  know you're going to be setting up
+#for the Expo, type "changenet cpp" before you shut your system down.
+#Then before you shutdown to go home, type "changenet home". 
+
+#I hope you find this usefull, and thanks again to Jim Sack, David
+#Beccue and Mike Marion for helping with this.
+
+
+#
+# changenet     Reconfigure the network from the home configuration
+#               to the one at cpp
+#
+# Author:       Neil Schneider &lt;pacneil@home.com&gt;
+#               Suggested by Jim Sack &lt;jsack@dornfeld.com&gt;
+#		Improved by David Beccue &lt;David@Beccue.com&gt;
+#		Proofreading by Mike Marion &lt;marion@miguelito.dyn.ml.org&gt;
+
+# See how we were called.
+case "$1" in
+  list)
+        ls -l /etc/sysconfig/network
+        ls -l /etc/sysconfig/static-routes
+        ls -l /etc/sysconfig/network-scripts/ifcfg-eth0
+        ls -l /etc/resolv.conf
+                ;;
+  edit)
+        vi /etc/sysconfig/network.cpp \
+        /etc/sysconfig/static-routes.cpp \
+        /etc/sysconfig/network-scripts/cpp.ifcfg-eth0 \
+        /etc/resolv.conf.cpp
+                ;;
+  build.cpp)
+        cp -vi /etc/sysconfig/network /etc/sysconfig/network.home
+        cp -vi /etc/sysconfig/static-routes /etc/sysconfig/static-routes.home
+        cp -vi /etc/sysconfig/network-scripts/ifcfg-eth0
+/etc/sysconfig/network-scripts/home.ifcfg-eth0
+        cp -vi /etc/resolv.conf /etc/resolv.conf.home
+                ;;
+  build.home)
+        cp -vi /etc/sysconfig/network /etc/sysconfig/network.cpp
+        cp -vi /etc/sysconfig/static-routes /etc/sysconfig/static-routes.cpp
+        cp -vi /etc/sysconfig/network-scripts/ifcfg-eth0
+/etc/sysconfig/network-scripts/cpp.ifcfg-eth0
+        cp -vi /etc/resolv.conf /etc/resolv.conf.cpp
+                ;;
+  home)
+        echo "Changing network services to home network: "
+        echo "Changing the network address.............   "
+        cp -f /etc/sysconfig/network.home /etc/sysconfig/network
+        echo "Changing the static-routes............   "
+        cp -f /etc/sysconfig/static-routes.home /etc/sysconfig/static-routes
+        echo "Changing eth0 to home address and network........  "
+        cp -f /etc/sysconfig/network-scripts/home.ifcfg-eth0
+/etc/sysconfig/network-scripts/ifcfg-eth0
+        echo "Changing the dns resolver ........  "
+        cp -f /etc/resolv.conf.home /etc/resolv.conf
+        echo "Stopping the network services ........ "
+        /etc/rc.d/init.d/network stop
+        echo "Restarting the network services ........ "
+        /etc/rc.d/init.d/network start
+        ;;
+  cpp)
+        echo "Changing network services to cpp network: "
+        echo "Changing the network address.............   "
+        cp -f /etc/sysconfig/network.cpp /etc/sysconfig/network
+        echo "Changing the static-routes............   "
+        cp -f /etc/sysconfig/static-routes.cpp /etc/sysconfig/static-routes
+        echo "Changing eth0 to cpp address and network........  "
+        cp -f /etc/sysconfig/network-scripts/cpp.ifcfg-eth0
+/etc/sysconfig/network-scripts/ifcfg-eth0
+        echo "Changing the dns resolver ........  "
+        cp -f /etc/resolv.conf.cpp /etc/resolv.conf
+        echo "Stopping the network services ........ "
+        /etc/rc.d/init.d/network stop
+        echo "Restarting the network services ........ "
+        /etc/rc.d/init.d/network start
+        ;;
+  *)
+        echo "
+This script is used to change the network configuration
+between cpp and my home network
+"
+        echo "Usage: $0 (home|cpp|list|build.cpp|build.home|edit)
+"
+        exit 1
+        ;;
+esac
+
+exit 0

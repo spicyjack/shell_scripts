@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# script for making an ISO filesystem, for CD burning
+
+# -r -T -v -J | Rock Ridge, Trans.Tbl, verbose, Joliet, and include all files
+# -A | Application name
+# -P | Publisher ID
+# -p | Person responsible
+# -x | exclude file/directory
+# -b | boot image is boot.img
+# -c | catalog file created	
+# -o | ISO image to create
+# -V | Volume ID
+# directory or file to create it from	 
+DATE=$(date +%d%h%Y)
+/usr/bin/nice -n 19 /usr/bin/mkisofs -r -v -J \
+-A "erolotus.com website backup for ${DATE}" \
+-publisher "http://www.erolotus.com" \
+-p "Erol Otus" \
+-V "eo.com-${DATE}"  \
+-graft-points \
+-m CVS \
+-m lost+found \
+-m TRANS.TBL \
+-m *.iso \
+-o /home/erolotus/erolotus.${DATE}.iso \
+devhtml/=/home/erolotus/devhtml \
+oldhtml/=/home/erolotus/html \
+gallery/=/home/erolotus/gallery \
+g2data/=/home/erolotus/g2data/albums \
+originals/=/home/erolotus/originals \
+db_backups/=/home/erolotus/db_backups \
+gallery_themes/=/home/antlinux/html/gallery/themes/eo/gallery_theme \
+drupal/=/home/httpd/drupal/misc/drupal.css \
+drupal/eodark/=/home/httpd/drupal/themes/eodark 

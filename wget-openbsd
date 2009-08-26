@@ -1,0 +1,21 @@
+#!/bin/sh
+
+SITE="http://sunsite.ualberta.ca/pub/OpenBSD/3.6/i386/"
+MIRROR_DIR=/home/ftp/linux/mirrors/openbsd-3.6
+
+if [ ! -r "index.txt" ]; then 
+    echo "Please download 'index.txt' from the archive you wish to mirror"
+    exit 1
+fi
+
+for FILE in `cat index.txt`; do
+    /usr/bin/wget -c -w 5 --random-wait -nH \
+    --cut-dirs=4 -P$MIRROR_DIR --dot-style=binary $SITE/$FILE
+done
+
+# -c continue retrieval
+# -m mirror == infinite recursion, timestamping, don't remove .listing files
+# -w wait X number of seconds
+# -nd no directories, don't create directories, duplicate files will be named
+# sequentially
+# -P use this directory to save in

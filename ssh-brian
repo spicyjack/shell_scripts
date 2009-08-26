@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# sets up a secure route between mpsd and observer
+# key to command line switches
+# -i ssh identity file
+# -l login name that ssh uses on remote machine
+# -f background after authentication and forwarding are completed
+# -C compression
+# -v verbose
+# -g accept connections from outside localhost i.e. any machine on that
+#    network
+# -L forward local port: host to forward to through ssh server : 
+#    port to forward to on remote machine 
+# -R forward remote port: host to forward from through ssh server : 
+#    port to forward to on local machine
+# -p port number to connect to
+
+/usr/local/bin/ssh -i ~/.ssh/id_observer -C -v -p 2222 \
+-L 2020:192.168.1.1:20 \
+-L 2021:192.168.1.1:21 \
+-L 2025:192.168.1.1:25 \
+-L 2119:news.dt1.sdca.home.com:119 \
+-L 2143:192.168.1.1:143 \
+-L 2401:192.168.1.1:2401 \
+-L 3128:192.168.1.1:3128 \
+-L 6667:irc.home.com:6667 \
+sunset-cliffs.org 
+
+#-R 5980:172.21.160.15:80 \
+#-R 5901:172.21.160.15:5901 \
+#-R 5022:172.21.160.15:22 \ 

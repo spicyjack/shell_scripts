@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# mounts a loopback ISO 9660 image
+
+mount $1 -r -t iso9660 -o loop /mnt/isoimg

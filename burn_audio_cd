@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# script to burn CD's from /dev/sda9
+
+# COMMAND OPTIONS
+#  -v verbose
+#  -dummy The  CD-Recorder  will  go through all steps of the
+#  recording process, but the laser is turned off dur-
+#  ing  this procedure.
+#  -inq   Do an inquiry for the drive, print the inquiry info
+#  and exit.
+#  speed=# Set  the  speed factor of the writing process to #.
+#  # is an integer, representing  a  multiple  of  the
+#  audio speed.
+
+# the script does not expand multiple files
+# use at your own risk
+
+DIRPATH=`echo ${1} | sed 's/[[:space:]]/\\ /g'`
+#echo "Dirpath is ${DIRPATH}"
+#SIZE=`/usr/bin/mkisofs -q -print-size "${DIRPATH}" | tr -d '\n'`
+#echo "Total blocksize for directory"
+#echo "${DIRPATH} is ${SIZE}"
+
+#/usr/bin/cdrecord -sao dev=16,0,0 tsize=${SIZE}s "${DIRPATH}"/*.wav
+
+for FILE in "${DIRPATH}"*.wav; do
+    echo "File is ${FILE}"
+    SIZE=`/usr/bin/mkisofs -q -print-size "${FILE}" | tr -d '\n'`
+    echo "Blocksize for file ${FILE} is ${SIZE} sectors"
+    /usr/bin/cdrecord -pad -sao dev=16,0,0 tsize=${SIZE}s "${FILE}"
+done
+
+#/usr/bin/eject /dev/cdrom

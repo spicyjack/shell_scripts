@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# creates the DNS database from log files in the $LOG_FILE directory
+
+LOG_DIR='/var/log/httpd'
+CFG_DIR='/usr/local/webalizer'
+DNS_FILE='/usr/local/apache/conf/dns_cache.db'
+
+for x in $LOG_DIR/*.log; do
+	if [ $1 ]; then echo now parsing $x; fi
+	/usr/bin/nice -n 19 /usr/local/bin/webazolver -q -N 10 \
+	-D $DNS_FILE $x
+done
+
+# runs the webalizer program for all of the config files in $CFG_DIR
+
+for y in $CFG_DIR/webalizer.conf.*; do
+	if [ $1 ]; then echo now webalyzing $y; fi	
+	/usr/bin/nice -n 19 /usr/local/bin/webalizer \
+	-D $DNS_FILE -c $y
+done

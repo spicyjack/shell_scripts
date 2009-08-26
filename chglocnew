@@ -1,0 +1,65 @@
+#!/bin/sh
+
+#David Beccue made some modifications to the changenet script I wrote.
+#Here are David's changes plus a few of mine. There was a problem with
+#one part, where you "cp -f /etc/sysconfig/networK-scripts/ifcfg-eth0.cpp\
+#/etc/sysconfig/network-scripts/ifcfg-eth0". Because of the way the 
+#network init scripts parse this file, you have the change it from 
+#ifcfg-eth0.cpp to cpp.ifcfg-eth0 and ifcfg-eth0.home to home.ifcfg-eth0
+#Thanks also the Mike Marion for finding the typo. This script will 
+#probably be usefull to run on all the systems we have for the Expo,
+#that will be running Linux. It makes it much easier to change your
+#network configuration. If you  know you're going to be setting up
+#for the Expo, type "changenet cpp" before you shut your system down.
+#Then before you shutdown to go home, type "changenet home". 
+
+#I hope you find this usefull, and thanks again to Jim Sack, David
+#Beccue and Mike Marion for helping with this.
+
+
+#
+# changenet     Reconfigure the network from the home configuration
+#               to the one at cpp
+#
+# Author:       Neil Schneider &lt;pacneil@home.com&gt;
+#               Suggested by Jim Sack &lt;jsack@dornfeld.com&gt;
+#		Improved by David Beccue &lt;David@Beccue.com&gt;
+#		Proofreading by Mike Marion &lt;marion@miguelito.dyn.ml.org&gt;
+
+# See how we were called.
+case "$1" in
+  list)
+        ls -l /etc/sysconfig/network
+        ls -l /etc/sysconfig/static-routes
+        ls -l /etc/sysconfig/network-scripts/ifcfg-eth0
+        ls -l /etc/resolv.conf
+                ;;
+  edit)
+        vi /etc/sysconfig/network.cpp \
+        /etc/sysconfig/static-routes.cpp \
+        /etc/sysconfig/network-scripts/cpp.ifcfg-eth0 \
+        /etc/resolv.conf.cpp
+                ;;
+  set)
+        rm /etc/sysconfig/network
+        rm /etc/sysconfig/static-routes
+        rm /etc/sysconfig/network-scripts/ifcfg-eth0
+	rm /etc/resolv.conf
+        ln -s /etc/sysconfig/network."$1" /etc/sysconfig/network
+        ln -s /etc/sysconfig/static-routes."1" /etc/sysconfig/static-routes
+        ln -s /etc/sysconfig/network-scripts/ifcfg-eth0."$1"
+/etc/sysconfig/network-scripts/ifcfg-eth0
+        ln -s /etc/resolv.conf."$1" /etc/resolv.conf.
+                  ;;  
+  *)
+        echo "
+This script is used to change the network configuration
+between cpp and my home network
+"
+        echo "Usage: $0 (home|cpp|list|build.cpp|build.home|edit)
+"
+        exit 1
+        ;;
+esac
+
+exit 0

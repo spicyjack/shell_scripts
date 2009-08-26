@@ -1,0 +1,1 @@
+/usr/local/bin/scp -v -i ~/.ssh/id_observer $1 $2

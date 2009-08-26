@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# script for making an ISO filesystem, for CD burning
+
+# -A Specifies  a  text string that will be written into
+#	the volume header.  This should describe the appli-
+#	cation that will be on the disc.
+# -J Generate Joliet directory records  in  addition  to
+#	regular iso9660 file names.
+# -o is the name  of  the  file  to  which  the  iso9660
+#	filesystem  image should be written.
+#  -v Verbose execution.
+# -r     This  is like the -R option, but file ownership and
+# modes are set to more useful values.
+# -R     Generate  SUSP  and RR records using the Rock Ridge
+# protocol to  further  describe  the  files  on  the
+# iso9660 filesystem.
+# -T     Generate  a file TRANS.TBL in each directory on the
+# CDROM, which can be used on non-Rock Ridge  capable
+# systems  to  help establish the correct file names.
+# -b boot_image
+# Specifies  the  path and filename of the boot image
+# to be used when making an "El Torito" bootable  CD.
+# -c boot_catalog
+# Specifies the path and filename of the boot catalog
+# to  be used when making an "El Torito" bootable CD.
+# This file will be  created  bymkisofs  in  the  source filesystem,
+#  so be sure the specified filename does not conflict with an exist-
+#  ing  file,  as it will be quietly overwritten!
+
+# -r -T -v | Rock Ridge, Trans.Tbl, and verbose	 
+# -A | Application name
+# -P | Publisher ID
+# -p | Person responsible
+# -x | exclude file/directory
+# -b | boot image is boot.img
+# -c | catalog file created	
+# -o | ISO image to create
+# directory or file to create it from	 
+
+/usr/bin/mkisofs -r -T -v -J \
+-A "OpenBSD 3.6" \
+-P "http://www.antlinux.com" \
+-p "Brian Manning" \
+-V "OpenBSD.36" \
+-x lost+found \
+-c boot.cat \
+-b cdrom36.fs \
+-o /home/ftp/linux/mirrors/openbsd-3.6.iso \
+/home/ftp/linux/mirrors/openbsd-3.6/

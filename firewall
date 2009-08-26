@@ -1,0 +1,33 @@
+#!/bin/sh
+# Script to control packet filtering.
+# stolen from Rusty's IPchains FAQ
+# http://www.rustcorp.com/linux/ipchains/index.html
+
+
+# If no rules, do nothing.
+[ -f /etc/ipchains.rules ] || exit 0
+
+case "$1" in
+    start)
+        echo -n "Turning on packet filtering:"
+        /sbin/ipchains-restore < /etc/ipchains.rules || exit 1
+        echo 1 > /proc/sys/net/ipv4/ip_forward
+        echo "."
+        ;;
+    stop)
+        echo -n "Turning off packet filtering:"
+        echo 0 > /proc/sys/net/ipv4/ip_forward
+        /sbin/ipchains -X
+        /sbin/ipchains -F
+        /sbin/ipchains -P input ACCEPT
+        /sbin/ipchains -P output ACCEPT
+        /sbin/ipchains -P forward ACCEPT
+        echo "."
+        ;;
+    *)
+        echo "Usage: /etc/init.d/packetfilter {start|stop}"
+        exit 1
+        ;;
+esac
+
+exit 0

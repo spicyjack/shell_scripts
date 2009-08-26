@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+# postgres startup script, based on ideas from postgres docs
+
+PG_CTL=/export/home/apps/apache/postgres/bin/pg_ctl
+LOG_FILE=/export/home/apps/apache/postgres/data/postgres.log
+DATA_DIR=/export/home/apps/apache/postgres/data
+
+case "$1" in
+'start')
+    echo "Starting PostgreSQL on `date`" >> $LOG_FILE
+	su - postgres -c "$PG_CTL start -l $LOG_FILE -o \"-i -l\" -D $DATA_DIR"
+	;;
+
+'stop')
+	su - postgres -c "$PG_CTL stop -D $DATA_DIR"
+    echo "Stopped PostgreSQL on `date`" >> $LOG_FILE
+	;;
+
+'kill')
+	su - postgres -c "$PG_CTL stop -m fast -D $DATA_DIR"
+    echo "Killed PostgreSQL on `date`" >> $LOG_FILE
+	;;
+	
+'status')
+	su - postgres -c "$PG_CTL status -D $DATA_DIR"
+	;;
+'restart')
+	su - postgres -c "$PG_CTL restart -o "-i -l" -l $LOG_FILE -D $DATA_DIR"
+	;;
+	
+*)
+	echo "Usage: $0 { start | stop | status | kill | restart }"
+	exit 1
+	;;
+esac
+exit 0

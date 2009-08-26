@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# script to burn CD's from /dev/sda9
+
+# COMMAND OPTIONS
+#  -v verbose
+#  -dummy The  CD-Recorder  will  go through all steps of the
+#  recording process, but the laser is turned off dur-
+#  ing  this procedure.
+#  -inq   Do an inquiry for the drive, print the inquiry info
+#  and exit.
+#  speed=# Set  the  speed factor of the writing process to #.
+#  # is an integer, representing  a  multiple  of  the
+#  audio speed.
+
+
+/usr/bin/cdrdao write -v --speed 6 --device 1,2,0 --driver generic-mmc $1
+
+# scsi0, ID6, 0,6,0
+# scsi1, id1, 1,1,0
+# scsi1, id2, 1,2,0

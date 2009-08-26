@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# mounts server SDG410 to /mnt/sdg410
+
+ncpmount -S SDG410 -U brian /mnt/sdg410

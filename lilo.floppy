@@ -1,0 +1,10 @@
+boot=/dev/fd0
+map=/mnt/floppy/map
+install=/mnt/floppy/boot.b
+prompt
+timeout=600
+
+image=/mnt/floppy/vmlinuz
+	label=linux
+	root=/dev/sda5
+	read-only

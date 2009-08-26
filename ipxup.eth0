@@ -1,0 +1,1 @@
+ipx_interface add -p eth0 802.3 0x4b00005b 

@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# script for making an ISO filesystem, for CD burning
+
+# -A Specifies  a  text string that will be written into
+#	the volume header.  This should describe the appli-
+#	cation that will be on the disc.
+# -a Include all files on the iso9660 filesystem.   Nor-
+#   mally  files that contain the characters '~' or '#'
+#   will not be included (these  are  typically  backup
+#   files for editors under unix).
+# -J Generate Joliet directory records  in  addition  to
+#	regular iso9660 file names.
+# -o is the name  of  the  file  to  which  the  iso9660
+#	filesystem  image should be written.
+#  -v Verbose execution.
+# -r     This  is like the -R option, but file ownership and
+# modes are set to more useful values.
+# -R     Generate  SUSP  and RR records using the Rock Ridge
+# protocol to  further  describe  the  files  on  the
+# iso9660 filesystem.
+# -T     Generate  a file TRANS.TBL in each directory on the
+# CDROM, which can be used on non-Rock Ridge  capable
+# systems  to  help establish the correct file names.
+# -b boot_image
+# Specifies  the  path and filename of the boot image
+# to be used when making an "El Torito" bootable  CD.
+# -c boot_catalog
+# Specifies the path and filename of the boot catalog
+# to  be used when making an "El Torito" bootable CD.
+# This file will be  created  bymkisofs  in  the  source filesystem,
+#  so be sure the specified filename does not conflict with an exist-
+#  ing  file,  as it will be quietly overwritten!
+
+# -r -T -v -J | Rock Ridge, Trans.Tbl, verbose, Joliet, and include all files
+# -hfs | Create an ISO9660/HFS hybrid CD
+# -apple | Create an ISO9660 CD with Apple's extensions
+# -A | Application name
+# -P | Publisher ID
+# -p | Person responsible
+# -x | exclude file/directory
+# -b | boot image is boot.img
+# -c | catalog file created	
+# -o | ISO image to create
+# -V | Volume ID
+# directory or file to create it from	 
+
+/usr/bin/mkisofs -r -T -v -J \
+-A "Mark & Jen's Pictures" \
+-P "http://www.markandjenny.com" \
+-p "Jen Levy" \
+-V "mnj-pix" \
+-m lost+found \
+-m TRANS.TBL \
+-o ~/mnjpix.iso \
+/mnt/logan5/oldpix
+
+#-b boot/cdboot.288 \
+#-c boot/catalog \
+#-c boot.cat \
+#-b images/boot.img \
+# mkisofs -a -b images/boot.img -c boot.catalog -A "Redhat 6.0" -f -d -D -J
+# -l -L -p "Neil Schneider" -P "http://www.linuxgeek.net" -r -R -T -x lost+found
+# -o image.raw /misc/i386
