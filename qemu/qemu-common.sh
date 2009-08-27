@@ -5,7 +5,7 @@
 # script to help setup QEMU
 UNAME=$(which uname)
 QEMU_PID="qemu.pid"
-KERNEL_VER=2.6.30.2
+KERNEL_VER="2.6.30.5"
 
 # Test for a file argument; some scripts will want an initramfs image, others
 # will want an ISO image

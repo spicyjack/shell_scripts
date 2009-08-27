@@ -3,28 +3,24 @@
 # handle PID file, KERNEL_VER and other fun things
 source qemu-common.sh
 
-#    -cdrom /Users/Shared/Files/ISOs/debian-LennyBeta2-i386-CD-1.iso \
 $QEMU_BIN \
-    -m 160 \
-    -name "propaganda tester" \
-    -cdrom /opt/sourcecode/ISO_Projects/propaganda-full.2009.6.x86.iso \
+    -m 224 \
+    -name "xantlinux" \
     -pidfile $QEMU_PID \
-    -serial telnet::4444,server,nowait \
     -monitor stdio \
     -boot c -localtime \
+    -redir tcp:20022::22 \
+    -redir tcp:28000::8000 \
     -redir tcp:4201::4200 \
-    -redir tcp:7768::7767 \
-    -redir tcp:8001::8000 \
-    -soundhw all \
-	-usb \
-    -hdd fat:/media/disk/newrips/Cirith\ Ungol/King\ Of\ The\ Dead/ \
+    -usb \
     -hda disk1.qcow2 \
 	-kernel vmlinuz-$KERNEL_VER-antlinux \
 	-initrd $1 \
-	-append "console=ttyS0,9600n8 console=tty0 run=init"
+    -hdd fat:/media/disk/newrips/Cirith\ Ungol/King\ Of\ The\ Dead/ \
+	-append "console=ttyS0,9600n8 console=tty0 loglevel=5 run=init"
+    
 	#-append "console=ttyS0,9600n8 console=tty0 network=lo"
 	#-append DEBUG=1
-    #-usbdevice disk:qotsa_flash_drive.qcow2 \
 
 # you can't use this if you background qemu, as the PID file will be removed
 # as soon as the shell returns from backgrounding the qemu process

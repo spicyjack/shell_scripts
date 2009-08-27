@@ -10,15 +10,14 @@ $QEMU_BIN \
     -pidfile $QEMU_PID \
     -serial telnet::4444,server,nowait \
     -monitor stdio \
-    -boot c \
-    -localtime \
+    -boot c -localtime \
     -redir tcp:4200::4200 \
-    -soundhw es1370 \
+    -soundhw all \
 	-usb \
     -hda disk1.qcow2 \
 	-kernel vmlinuz-$KERNEL_VER-antlinux \
 	-initrd $1 \
-	-append "console=ttyS0,9600n8 console=tty0 loglevel=5 run=init"
+	-append "console=ttyS0,9600n8 console=tty0 loglevel=5 run=init mute=1"
     # for more dish on loglevel, see 
     # $KERNEL_SRC/Documentation/kernel-parameters.txt
 	#-append "console=ttyS0,9600n8 console=tty0 run=init pause=1"

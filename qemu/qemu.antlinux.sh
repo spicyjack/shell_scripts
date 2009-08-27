@@ -16,7 +16,7 @@ $QEMU_BIN \
     -hda disk1.qcow2 \
 	-kernel vmlinuz-$KERNEL_VER-antlinux \
 	-initrd $1 \
-	-append "console=ttyS0,9600n8 console=tty0 loglevel=6 run=init"
+	-append "console=ttyS0,9600n8 console=tty0 loglevel=5 run=init"
     #-hdd fat:/media/disk/newrips/Cirith\ Ungol/King\ Of\ The\ Dead/ \
 	#-append "console=ttyS0,9600n8 console=tty0 network=lo"
 	#-append DEBUG=1

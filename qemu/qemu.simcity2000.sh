@@ -3,21 +3,20 @@
 # make sure you add 'console=ttyS0,9600' to your grub, and start a getty on
 # ttyS0
 #QEMU_BIN="/Applications/Apps/Q-0.9.0.app/Contents/MacOS/i386-softmmu.app/Contents/MacOS/i386-softmmu"
-QEMU_BIN="/Applications/Apps/Q-0.9.1d118.app/Contents/MacOS"
-QEMU_BIN="$QEMU_BIN/i386-softmmu.app/Contents/MacOS/i386-softmmu"
+QEMU_BIN="/usr/local/bin/qemu"
 PIDFILE=qemu.pid
 
 # NOTE! -cdrom uses the secondary master channel (/dev/hdc)
 $QEMU_BIN \
     -name "SimCity 2000" \
     -pidfile $PIDFILE -monitor stdio \
-    -m 32 \
+    -m 64 \
     -boot c -localtime \
-    -soundhw all \
+    -soundhw adlib \
 	-usb \
-	-hda disk1.qcow2 \
-    -hdb fat:/Users/brian/Files/Windows_Software/DOS \
-    -cdrom /Users/Shared/Files/ISOs/freedos-1.0-full_cd.iso
+	-hda simcity2000.qcow2 \
+    -hdb fat:/opt/www/html/idGames/doom
+    -cdrom /opt/www/html/ISOs/freedos-1.0-full.iso
 
 #-redir tcp:22222::22 \
 
