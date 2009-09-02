@@ -21,7 +21,7 @@ $QEMU_BIN \
     -kernel "$QEMU_KERNEL" \
     -initrd $1 \
     -append "$QEMU_APPEND" \
-    $EXTRA_ARGS
+    $EXTRA_ARGS 
 
     # for more dish on loglevel, see 
     # $KERNEL_SRC/Documentation/kernel-parameters.txt
