@@ -12,7 +12,7 @@ $QEMU_BIN \
     -pidfile $PIDFILE -monitor stdio \
     -m 64 \
     -boot c -localtime \
-    -soundhw adlib \
+    -soundhw gus \
 	-usb \
 	-hda simcity2000.qcow2 \
     -hdb fat:/opt/www/html/idGames/doom
