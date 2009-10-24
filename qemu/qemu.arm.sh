@@ -16,22 +16,10 @@
     -redir tcp:28022::22 \
     -redir tcp:28000::8000 \
     -redir tcp:28200::4200 \
-    -hda disk1.arm.qcow2 \
+    -hda debian_lenny_armel_small.qcow \
 	-usb \
-    -kernel vmlinuz-2.6.18-6-versatile \
-    -initrd initrd.img-2.6.18-6-versatile \
-    -append "root=/dev/ram"
-
-# you can't use this if you background qemu, as the PID file will be removed
-# as soon as the shell returns from backgrounding the qemu process
-if [ $? -gt 0 ]; then 
-   echo "QEMU exited with status code of $?"
-fi
-rm $QEMU_PID
-
-# a == floppy
-# c == hard drive
-# d == cd rom
-#    -monitor stdio -serial stdio \
+    -kernel vmlinuz-2.6.26-1-versatile \
+    -initrd initrd.img-2.6.26-1-versatile \
+    -append "root=/dev/sda1"
 
 # vim: set paste :
