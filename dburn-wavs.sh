@@ -31,8 +31,9 @@ path=NULL
 tmpfile=/tmp/tmp.toc
 #DEVICE=ATAPI:16,0,0
 #DEVICE=ATA:1,0,0
-DEVICE="IODVDServices/0"
-DRIVER=generic-mmc 
+#DEVICE="IODVDServices/0"
+DEVICE="0,1,0"
+DRIVER="generic-mmc-raw"
 
 # Parse command line
 while [ $# -gt 0 ]; do

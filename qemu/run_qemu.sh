@@ -14,7 +14,8 @@ $QEMU_BIN \
     -pidfile $QEMU_PID \
     -monitor "$QEMU_MONITOR" \
     -boot "$QEMU_BOOT" \
-    -serial telnet::4444,server,nowait \
+    -serial telnet::4440,server,nowait \
+    -vnc :0 -k en-us \
     -soundhw "$QEMU_SOUNDHW" \
     -usb \
     -hda "$QEMU_HDA" \
