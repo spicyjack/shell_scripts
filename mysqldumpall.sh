@@ -8,9 +8,9 @@ for DIR in $(/usr/bin/find /var/lib/mysql -type d 2>/dev/null \
 do
     echo "Creating dumpfile ${DIR}.${DATE}.sql.bz2"
     /usr/bin/mysqldump --add-drop-table --add-locks --all --quick \
-        $DIR | /usr/bin/bzip2 -9 --stdout --compress \
+        $DIR | /bin/bzip2 -9 --stdout --compress \
         > $OUTDIR/$DIR.$DATE.sql.bz2
 done
 
-/bin/mv $OUTDIR/drup_erolotus* /home/erolotus/db_backups
-/bin/mv $OUTDIR/eo_gallery* /home/erolotus/db_backups
+#/bin/mv $OUTDIR/drup_erolotus* /home/erolotus/db_backups
+#/bin/mv $OUTDIR/eo_gallery* /home/erolotus/db_backups
