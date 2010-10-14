@@ -1,0 +1,83 @@
+#!/bin/bash
+cat <<x
+
+gpg-edit 20050106               Bjarni Rúnar Einarsson, http://bre.klaki.net/
+                                This code is in the public domain.
+
+x
+# This is a wrapper script to simplify editing of text files which are
+# stored symmetrically encrypted with GnuPG.
+# 
+# Usage:
+#
+#   gpg-edit file.txt
+#
+# While editing the file is decrypted to a temporary location in the user's
+# home directory. The script takes steps to ensure that any temporary files
+# are readable and writable by the user, but noone else.  The file is then
+# edited using the editor specified by the VISUAL environment variable, or 
+# "jed" if the variable is unset.
+#
+# When the user has finished editing or viewing the contents of the file, 
+# he or she is asked whether the updated contents should be encrypted and 
+# saved back to the original location. Finally any temporary files are auto-
+# matically removed.
+#
+# LIMITATIONS:
+#
+#   - The script will leave unencrypted files lying around in the user's
+#     home directory if it terminates abnormally (e.g. by getting killed).
+#
+#   - Unencrypted data can obviously be stolen by the local superuser 
+#     (or e.g. automated backup scripts) while the file is being edited.
+#
+#   - Supposedly "rm" isn't the most secure way to remove sensitive data.
+#     The script attempts (somewhat weakly) to wipe all temporary files using
+#     "dd" from /dev/urandom before deleting them, but this only affects 
+#     files created by the script itself, not temporary files which may have 
+#     been created by the editor (such as swap files used by vim).  Also, 
+#     this is subject to limitations imposed by OS behavior (such as data 
+#     journalling, filesystem snapshots, backups, etc.).
+#
+# The script was announced and discussed a little bit in my weblog, in
+# this entry: http://bre.klaki.net/dagbok/faerslur/1105040646.shtml
+#
+###############################################################################
+
+UNAME=`uname -s`
+
+if [ $UNAME == "Darwin" ]; then
+    echo "Script is currently broken in Darwin"
+    exit 1
+fi
+
+# Modify this to set a different default editor.
+#
+#[ "$VISUAL" = "" ] && VISUAL=jed
+[ "$VISUAL" = "" ] && VISUAL="vim -n"
+
+# the string to grep for
+#
+GREP_STR=$1
+if [ "x$GREP_STR" = "x" ]; then
+    echo "Usage: gpggrep grepstring filename"
+    exit 1
+fi
+# the file to edit.
+#
+FILE=$2
+if [ "x$FILE" = "x" ]; then
+    echo "Usage: gpggrep grepstring filename"
+    exit 1
+fi
+
+if [ -e "$FILE" ]; then
+    echo "==== Begin grep output ===="
+    if ! gpg < "$FILE" 2>/dev/null | grep $GREP_STR; then
+        echo "gpggrep failed to open $FILE"
+        exit 1
+    fi
+    echo "==== End grep output ===="
+fi
+
+echo " done."
