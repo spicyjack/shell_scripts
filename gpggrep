@@ -46,10 +46,10 @@ x
 
 UNAME=`uname -s`
 
-if [ $UNAME == "Darwin" ]; then
-    echo "Script is currently broken in Darwin"
-    exit 1
-fi
+#if [ $UNAME == "Darwin" ]; then
+#    echo "Script is currently broken in Darwin"
+#    exit 1
+#fi
 
 # Modify this to set a different default editor.
 #
