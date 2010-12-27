@@ -15,16 +15,16 @@ $QEMU_BIN \
     -monitor "$QEMU_MONITOR" \
     -boot "$QEMU_BOOT" \
     -serial telnet::4440,server,nowait \
-    -vnc :0 -k en-us \
     -soundhw "$QEMU_SOUNDHW" \
     -usb \
     -hda "$QEMU_HDA" \
     -kernel "$QEMU_KERNEL" \
     -initrd $1 \
     -append "$QEMU_APPEND" \
-    $EXTRA_ARGS 
-
-    # for more dish on loglevel, see 
+    $EXTRA_ARGS
+#    -vnc :0 \
+    # -k en-us \
+    # for more dish on loglevel, see
     # $KERNEL_SRC/Documentation/kernel-parameters.txt
 	#-append "console=ttyS0,9600n8 console=tty0 run=init pause=1"
 	#-append "console=ttyS0,9600n8 console=tty0 network=lo"
