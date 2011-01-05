@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# testing the -z (zero length) and -n (non-zero length) options to 'test'
+# testing using eval() to get the values of variables given only the name of
+# the variable
 
 TEST_VAR="foo"
 
