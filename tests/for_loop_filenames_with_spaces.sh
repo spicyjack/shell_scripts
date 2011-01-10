@@ -4,17 +4,24 @@
 # shell interpreting the spaces in filenames as a shell delimter
 
 test_function () {
-    local FILES=$1
+    local FILES="${1}"
     echo "received: $FILES"
 
-    #for FILE in $(IFS='|' echo ${FILES});
-    for FILE in $(echo ${FILES} | awk -F'|' '{print $1}');
+    #for FILE in $(IFS="\0" echo ${FILES});
+    for FILE in $(IFS='|' echo ${FILES});
     do
-        ls -ld $FILE
+        ls -ld "$FILE"
     done
 } # test_function ()
 
-SHELLINABOX=$(dpkg -L shellinabox | tr '\n' '|')
-echo "shellinabox currently is:"
-echo $SHELLINABOX
-test_function "${SHELLINABOX}"
+TEMP_DIR=$(/bin/mktemp -d /dev/shm/filenames_test.XXXXX)
+for FILE_NUM in $(seq 5);
+do
+    touch "${TEMP_DIR}/test file number ${FILE_NUM}"
+done
+#FILE_LIST=$(ls -1 ${TEMP_DIR} | tr '\n' '\0')
+FILE_LIST=$(ls -1 ${TEMP_DIR} | tr '\n' '|')
+test_function "${FILE_LIST}"
+
+/bin/rm -rf $TEMP_DIR
+exit 0
