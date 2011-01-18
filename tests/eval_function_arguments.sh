@@ -9,8 +9,8 @@ test_function () {
     local TEST_ARG=$1
 
     eval 'VAL=$'${TEST_ARG}
-    echo "TEST_ARG = ${TEST_ARG}"
-    echo "VAL = ${VAL}"
+    echo "TEST_ARG=${TEST_ARG}"
+    echo "VAL=${VAL}"
 } # test_function ()
 
 test_function TEST_VAR
