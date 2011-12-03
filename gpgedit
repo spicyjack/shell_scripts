@@ -108,7 +108,7 @@ if ! diff $TEMPDIR/data.txt $TEMPDIR/orig >/dev/null; then
         ;;
 #        *) while ! gpg -c -a <$TEMPDIR/data.txt >$TEMPDIR/data.gpg; do
         *) while ! gpg --encrypt --armor --sign \
-            --default-recipient-self --encrypt-to 0x6A935339 \
+            --default-recipient-self --default-key 0x8D7CEDE6 \
             <$TEMPDIR/data.txt >$TEMPDIR/data.gpg; do
                clear
                echo "Uh, please try again..."
