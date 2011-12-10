@@ -21,11 +21,7 @@ prereqs () {
     show_banner "Adding 'icinga' user"
     /usr/sbin/useradd --system --create-home icinga
 
-    # install prerequisites
-    show_banner "Installing prerequisite packages"
-    apt-get --assume-yes install apache2 build-essential libgd2-xpm-dev \
-        libjpeg62 libjpeg62-dev libpng12-0 libpng12-dev snmp libsnmp-base \
-        libdbi0 libdbi0-dev libssl-dev mysql-client libperl-dev
+
 
     # create and change to the build directory
     show_banner "Creating build directory"
@@ -33,11 +29,17 @@ prereqs () {
     cd ${ICINGA_BUILD_DIR}
 } # prereqs
 
-## INSTALL_ICINGA FUNCTION ##
+## INSTALL_ICINGA ##
 install_icinga () {
     # icinga
     local VERSION="1.6.1"
     local START_DIR=$PWD
+
+    # install prerequisites
+    show_banner "Installing prerequisite packages for icinga-core"
+    apt-get --assume-yes install apache2 build-essential libgd2-xpm-dev \
+        libjpeg62 libjpeg62-dev libpng12-0 libpng12-dev snmp libsnmp-base \
+        libdbi0 libdbi0-dev libssl-dev mysql-client libperl-dev
 
     if [ ! -e "icinga-${VERSION}.tar.gz" ]; then
         show_banner "Dowloading icinga version $VERSION"
@@ -53,7 +55,7 @@ install_icinga () {
 
     cd icinga-${VERSION}
     show_banner "Running './configure'"
-    ./configure --prefix=/usr/local/share/icinga --enable-idoutils \
+    ./configure --prefix=/usr/local/icinga/icinga-core --enable-idoutils \
     --enable-nanosleep --enable-ssl --with-perlcache --enable-embedded-perl
     show_banner "Running 'make all'"
     /usr/bin/time make all
@@ -83,10 +85,19 @@ install_icinga () {
     show_banner "Enabling icinga site via sites-enabled/a2ensite"
     /usr/sbin/a2ensite icinga
     cd ..
+} # icinga-core
 
+## ICINGA-WEB ##
+install_icinga_web () {
+    local VERSION=1.6.0
+    local START_DIR=$PWD
 
     # icinga-web
-    VERSION=1.6.0
+    # install prerequisites
+    show_banner "Installing prerequisite packages for icinga-web"
+    apt-get --assume-yes install php5 php5-cli php-pear php5-xmlrpc \
+        php5-xsl php5-pdo php5-soap php5-gd php5-ldap php5-mysql
+
     if [ ! -e "icinga-web-${VERSION}.tar.gz" ]; then
         wget -O icinga-web-${VERSION}.tar.gz \
         ${SF_BASE}/icinga-web/${VERSION}/icinga-web-${VERSION}.tar.gz/download
@@ -95,7 +106,31 @@ install_icinga () {
         rm -rf "icinga-web-${VERSION}"
     fi
     tar -zxvf icinga-web-${VERSION}.tar.gz
+    cd icinga-web-$VERSION
+    ./configure --prefix=/usr/local/icinga/icinga-web
+                --with-web-user=www-data
+                --with-web-group=www-data
+                --with-web-path=/icinga-web
+                --with-web-apache-path=/etc/apache2/sites-available
+                --with-db-type=mysql
+                --with-db-host=localhost
+                --with-db-port=3306
+                --with-db-name=icinga_web
+                --with-db-user=icinga_web
+                --with-db-pass=icinga_web
+                --with-conf-folder=etc/conf.d
+                --with-log-folder=log
+                --with-api-subtype=mysql
+                --with-api-host=localhost
+                --with-api-port=3306
+                --with-api-socket="/var/run/mysqld/mysqld.sock"
+    make install
+    make install-apache-config
+    make install-javascript
+} # icinga-web
 
+## ICINGA-REPORTS ##
+install_icinga_reports () {
     # icinga-reports
     VERSION=1.6.0
     if [ ! -e "icinga-reports-${VERSION}.tar.gz" ]; then
@@ -106,7 +141,10 @@ install_icinga () {
         rm -rf "icinga-reports-${VERSION}"
     fi
     tar -zxvf icinga-reports-${VERSION}.tar.gz
+}
 
+## ICINGA MOBILE ##
+install_icinga_mobile () {
     # icinga-mobile
     VERSION=0.1.0
     if [ ! -e "icinga-mobile-${VERSION}.zip" ]; then
@@ -117,8 +155,16 @@ install_icinga () {
         rm -rf "icinga-mobile-${VERSION}"
     fi
     unzip icinga-mobile-${VERSION}.zip
+}
 
 
+## MAIN SCRIPT ##
+
+prereqs
+install_icinga
+install_icinga_web
+#install_icinga_reports () {
+exit 0
 
 # make the directory if it doesn't exist
 if [ -d $CFG_DIR ]; then
