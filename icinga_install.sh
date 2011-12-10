@@ -87,7 +87,7 @@ install_icinga () {
     cd ..
 } # icinga-core
 
-## ICINGA-WEB ##
+## INSTALL_ICINGA_WEB ##
 install_icinga_web () {
     local VERSION=1.6.0
     local START_DIR=$PWD
@@ -130,20 +130,25 @@ install_icinga_web () {
     # move the resulting file from /etc/apache2/conf.d to
     # /etc/apache2/sites-available
     show_banner "Moving config file to sites-available"
-    if [ ! -e /etc/apache2/sites-available/icinga-web ]; then
-        /bin/mv /etc/apache2/conf.d/icinga-web.conf \
-            /etc/apache2/sites-available/icinga-web
-    else
-        echo "WARNING: /etc/apache2/sites-available/icinga-web file exists"
-        echo "WARNING: Will not replace existing file"
-        echo "WARNING: Copy the file /etc/apache2/conf.d/icinga-web.conf"
-        echo "WARNING: to /etc/apache2/sites-available/icinga-web if you"
-        echo "WARNING: want to use the default icinga-web Apache config file"
-    fi
+    ICINGA_WEB_FILES="icinga-web.conf charset localized-error-pages security"
+    for INSTALL_FILE in $ICINGA_WEB_FILES; do
+        if [ ! -e /etc/apache2/sites-available/icinga-web ]; then
+            /bin/mv /etc/apache2/conf.d/icinga-web.conf \
+                /etc/apache2/sites-available/icinga-web
+        else
+            echo "WARNING: /etc/apache2/sites-available/${INSTALL_FILE} exists"
+            echo "WARNING: Will not replace existing file"
+            echo "WARNING: Copy the file /etc/apache2/conf.d/${INSTALL_FILE}"
+            echo "WARNING: to /etc/apache2/sites-available/${INSTALL_FILE}"
+            echo "WARNING: to use the default ${INSTALL_FILE} config file"
+        fi
+    done
 
     # from apache2.2-common
-    show_banner "Enabling icinga site via sites-enabled/a2ensite"
-    /usr/sbin/a2ensite icinga
+    show_banner "Enabling icinga-web Apache config files via a2ensite"
+    for INSTALL_FILE in $ICINGA_WEB_FILES; do
+        /usr/sbin/a2ensite $INSTALL_FILE
+    done
     cd ..
 } # icinga-core
 
