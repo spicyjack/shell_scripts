@@ -67,7 +67,7 @@ install_icinga () {
     /usr/bin/time make install-config
     show_banner "Running 'make install-webconf'"
     /usr/bin/time make install-webconf
-    # FIXME move the resulting file from /etc/apache2/conf.d to
+    # move the resulting file from /etc/apache2/conf.d to
     # /etc/apache2/sites-available
     show_banner "Moving config file to sites-available"
     if [ ! -e /etc/apache2/sites-available/icinga ]; then
@@ -78,7 +78,7 @@ install_icinga () {
         echo "WARNING: Will not replace existing file"
         echo "WARNING: Copy the file /etc/apache2/conf.d/icinga.conf"
         echo "WARNING: to /etc/apache2/sites-available/icinga if you"
-        echo "WARNING: want to use the default Icinga Apache config file"
+        echo "WARNING: want to use the default icinga Apache config file"
     fi
 
     # from apache2.2-common
@@ -107,26 +107,47 @@ install_icinga_web () {
     fi
     tar -zxvf icinga-web-${VERSION}.tar.gz
     cd icinga-web-$VERSION
-    ./configure --prefix=/usr/local/icinga/icinga-web
-                --with-web-user=www-data
-                --with-web-group=www-data
-                --with-web-path=/icinga-web
-                --with-web-apache-path=/etc/apache2/sites-available
-                --with-db-type=mysql
-                --with-db-host=localhost
-                --with-db-port=3306
-                --with-db-name=icinga_web
-                --with-db-user=icinga_web
-                --with-db-pass=icinga_web
-                --with-conf-folder=etc/conf.d
-                --with-log-folder=log
-                --with-api-subtype=mysql
-                --with-api-host=localhost
-                --with-api-port=3306
+    ./configure --prefix=/usr/local/icinga/icinga-web \
+                --with-web-user=www-data \
+                --with-web-group=www-data \
+                --with-web-path=/icinga-web \
+                --with-web-apache-path=/etc/apache2/sites-available \
+                --with-db-type=mysql \
+                --with-db-host=localhost \
+                --with-db-port=3306 \
+                --with-db-name=icinga_web \
+                --with-db-user=icinga_web \
+                --with-db-pass=icinga_web \
+                --with-conf-folder=etc/conf.d \
+                --with-log-folder=log \
+                --with-api-subtype=mysql \
+                --with-api-host=localhost \
+                --with-api-port=3306 \
                 --with-api-socket="/var/run/mysqld/mysqld.sock"
     make install
     make install-apache-config
     make install-javascript
+    # move the resulting file from /etc/apache2/conf.d to
+    # /etc/apache2/sites-available
+    show_banner "Moving config file to sites-available"
+    if [ ! -e /etc/apache2/sites-available/icinga-web ]; then
+        /bin/mv /etc/apache2/conf.d/icinga-web.conf \
+            /etc/apache2/sites-available/icinga-web
+    else
+        echo "WARNING: /etc/apache2/sites-available/icinga-web file exists"
+        echo "WARNING: Will not replace existing file"
+        echo "WARNING: Copy the file /etc/apache2/conf.d/icinga-web.conf"
+        echo "WARNING: to /etc/apache2/sites-available/icinga-web if you"
+        echo "WARNING: want to use the default icinga-web Apache config file"
+    fi
+
+    # from apache2.2-common
+    show_banner "Enabling icinga site via sites-enabled/a2ensite"
+    /usr/sbin/a2ensite icinga
+    cd ..
+} # icinga-core
+
+
 } # icinga-web
 
 ## ICINGA-REPORTS ##
