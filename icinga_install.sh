@@ -34,28 +34,29 @@ install_icinga_core () {
     # icinga
     local VERSION="1.6.1"
     local START_DIR=$PWD
+    local PKG="icinga"
 
     # install prerequisites
-    show_banner "Installing prerequisite packages for icinga-core"
+    show_banner "Installing prerequisite packages for ${PKG}-core"
     apt-get --assume-yes install apache2 build-essential libgd2-xpm-dev \
         libjpeg62 libjpeg62-dev libpng12-0 libpng12-dev snmp libsnmp-base \
         libdbi0 libdbi0-dev libssl-dev mysql-client libperl-dev
 
-    if [ ! -e "icinga-${VERSION}.tar.gz" ]; then
-        show_banner "Dowloading icinga-core version $VERSION"
-        wget -O icinga-${VERSION}.tar.gz \
-        ${SF_BASE}/icinga/${VERSION}/icinga-${VERSION}.tar.gz/download
+    if [ ! -e "${PKG}-${VERSION}.tar.gz" ]; then
+        show_banner "Dowloading ${PKG}-core version $VERSION"
+        wget -O ${PKG}-${VERSION}.tar.gz \
+        ${SF_BASE}/${PKG}/${VERSION}/${PKG}-${VERSION}.tar.gz/download
     fi
-    if [ -d "icinga-${VERSION}" ]; then
-        show_banner "Removing old copy of icinga-core"
-        rm -rf "icinga-${VERSION}"
+    if [ -d "${PKG}-${VERSION}" ]; then
+        show_banner "Removing old copy of ${PKG}-core"
+        rm -rf "${PKG}-${VERSION}"
     fi
-    show_banner "Unpacking icinga-core version ${VERSION}"
-    tar -zxvf icinga-${VERSION}.tar.gz
+    show_banner "Unpacking ${PKG}-core version ${VERSION}"
+    tar -zxvf ${PKG}-${VERSION}.tar.gz
 
-    cd icinga-${VERSION}
-    show_banner "Running './configure' for icinga-core"
-    ./configure --prefix=/usr/local/icinga/icinga-core --enable-idoutils \
+    cd ${PKG}-${VERSION}
+    show_banner "Running './configure' for ${PKG}-core"
+    ./configure --prefix=/usr/local/icinga/${PKG}-core --enable-idoutils \
     --enable-nanosleep --enable-ssl --with-perlcache --enable-embedded-perl
     show_banner "Running 'make all'"
     /usr/bin/time make all
@@ -70,9 +71,9 @@ install_icinga_core () {
     # move the resulting file from /etc/apache2/conf.d to
     # /etc/apache2/sites-available
     show_banner "Moving config file to sites-available"
-    if [ ! -e /etc/apache2/sites-available/icinga ]; then
+    if [ ! -e /etc/apache2/sites-available/${PKG}-core ]; then
         /bin/mv /etc/apache2/conf.d/icinga.conf \
-            /etc/apache2/sites-available/icinga
+            /etc/apache2/sites-available/${PKG}-core
     else
         echo "WARNING: /etc/apache2/sites-available/icinga file exists"
         echo "WARNING: Will not replace existing file"
@@ -91,32 +92,33 @@ install_icinga_core () {
 install_icinga_web () {
     local VERSION=1.6.0
     local START_DIR=$PWD
+    local PKG="icinga-web"
 
     # icinga-web
     # install prerequisites
-    show_banner "Installing prerequisite packages for icinga-web"
+    show_banner "Installing prerequisite packages for ${PKG}"
     apt-get --assume-yes install php5 php5-cli php-pear php5-xmlrpc \
         php5-xsl php5-pdo php5-soap php5-gd php5-ldap php5-mysql
 
-    if [ ! -e "icinga-web-${VERSION}.tar.gz" ]; then
-        show_banner "Downloading icinga-web version ${VERSION}"
-        wget -O icinga-web-${VERSION}.tar.gz \
-        ${SF_BASE}/icinga-web/${VERSION}/icinga-web-${VERSION}.tar.gz/download
+    if [ ! -e "${PKG}-${VERSION}.tar.gz" ]; then
+        show_banner "Downloading ${PKG} version ${VERSION}"
+        wget -O ${PKG}-${VERSION}.tar.gz \
+        ${SF_BASE}/${PKG}/${VERSION}/${PKG}-${VERSION}.tar.gz/download
     fi
-    if [ -d "icinga-web-${VERSION}" ]; then
+    if [ -d "${PKG}-${VERSION}" ]; then
         show_banner "Removing old copy of icinga-core"
-        rm -rf "icinga-web-${VERSION}"
+        rm -rf "${PKG}-${VERSION}"
     fi
     #
     show_banner "Unpacking icinga-core version ${VERSION}"
-    tar -zxvf icinga-web-${VERSION}.tar.gz
-    cd icinga-web-$VERSION
+    tar -zxvf ${PKG}-${VERSION}.tar.gz
+    cd ${PKG}-$VERSION
     #
-    show_banner "Running './configure' for icinga-core"
-    ./configure --prefix=/usr/local/icinga/icinga-web \
+    show_banner "Running './configure' for ${PKG}"
+    ./configure --prefix=/usr/local/icinga/${PKG} \
                 --with-web-user=www-data \
                 --with-web-group=www-data \
-                --with-web-path=/icinga-web \
+                --with-web-path=/${PKG} \
                 --with-web-apache-path=/etc/apache2/sites-available \
                 --with-db-type=mysql \
                 --with-db-host=localhost \
@@ -137,20 +139,25 @@ install_icinga_web () {
     show_banner "Running 'make install-javascript'"
     make install-javascript
     show_banner "Moving config file to sites-available"
-    if [ ! -e /etc/apache2/sites-available/icinga-web ]; then
-        /bin/mv /etc/apache2/conf.d/icinga-web.conf \
-            /etc/apache2/sites-available/icinga-web
+    if [ ! -e /etc/apache2/sites-available/${PKG} ]; then
+        if [ -e /etc/apache2/sites-available/${PKG}.conf ]; then
+            /bin/mv /etc/apache2/sites-available/${PKG}.conf \
+                /etc/apache2/sites-available/${PKG}
+        else
+            echo "ERROR: /etc/apache2/sites-available/${PKG}.conf"
+            echo "ERROR: not found; can't rename the config file"
+        fi
     else
-        echo "WARNING: /etc/apache2/sites-available/icinga-web.conf exists"
-        echo "WARNING: Will not replace existing file"
-        echo "WARNING: Copy the file /etc/apache2/conf.d/icinga-web.conf"
-        echo "WARNING: to /etc/apache2/sites-available/icinga-web"
-        echo "WARNING: to use the default icinga-web config file"
+        echo "WARNING: /etc/apache2/sites-available/${PKG} exists"
+        echo "WARNING: Will not replace existing file; Copy the file"
+        echo "WARNING: /etc/apache2/sites-available/${PKG}.conf"
+        echo "WARNING: to /etc/apache2/sites-available/${PKG}"
+        echo "WARNING: to use the default ${PKG} config file"
     fi
 
     # from apache2.2-common
-    show_banner "Enabling icinga-web Apache config files via a2ensite"
-    /usr/sbin/a2ensite icinga-web
+    show_banner "Enabling ${PKG} Apache config files via a2ensite"
+    /usr/sbin/a2ensite ${PKG}
     cd $START_DIR
 } # install_icinga_web
 
@@ -158,16 +165,17 @@ install_icinga_web () {
 install_icinga_reports () {
     local VERSION=1.6.0
     local START_DIR=$PWD
+    local PKG="icinga-reports"
 
-    if [ ! -e "icinga-reports-${VERSION}.tar.gz" ]; then
-        show_banner "Downloading icinga-reports version ${VERSION}"
-        wget -O icinga-reports-${VERSION}.tar.gz \
-            ${SF_BASE}/icinga-reporting/${VERSION}/icinga-reports-${VERSION}.tar.gz/download
+    if [ ! -e "${PKG}-${VERSION}.tar.gz" ]; then
+        show_banner "Downloading ${PKG} version ${VERSION}"
+        wget -O ${PKG}-${VERSION}.tar.gz \
+            ${SF_BASE}/icinga-reporting/${VERSION}/${PKG}-${VERSION}.tar.gz/download
     fi
-    if [ -d "icinga-reports-${VERSION}" ]; then
-        rm -rf "icinga-reports-${VERSION}"
+    if [ -d "${PKG}-${VERSION}" ]; then
+        rm -rf "${PKG}-${VERSION}"
     fi
-    tar -zxvf icinga-reports-${VERSION}.tar.gz
+    tar -zxvf ${PKG}-${VERSION}.tar.gz
 } # install_icinga_reports
 
 ## ICINGA MOBILE ##
