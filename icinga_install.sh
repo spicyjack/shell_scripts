@@ -30,7 +30,7 @@ prereqs () {
 } # prereqs
 
 ## INSTALL_ICINGA ##
-install_icinga () {
+install_icinga_core () {
     # icinga
     local VERSION="1.6.1"
     local START_DIR=$PWD
@@ -42,19 +42,19 @@ install_icinga () {
         libdbi0 libdbi0-dev libssl-dev mysql-client libperl-dev
 
     if [ ! -e "icinga-${VERSION}.tar.gz" ]; then
-        show_banner "Dowloading icinga version $VERSION"
+        show_banner "Dowloading icinga-core version $VERSION"
         wget -O icinga-${VERSION}.tar.gz \
         ${SF_BASE}/icinga/${VERSION}/icinga-${VERSION}.tar.gz/download
     fi
     if [ -d "icinga-${VERSION}" ]; then
-        show_banner "Removing old copy of icinga"
+        show_banner "Removing old copy of icinga-core"
         rm -rf "icinga-${VERSION}"
     fi
-    show_banner "Unpacking icinga version ${VERSION}"
+    show_banner "Unpacking icinga-core version ${VERSION}"
     tar -zxvf icinga-${VERSION}.tar.gz
 
     cd icinga-${VERSION}
-    show_banner "Running './configure'"
+    show_banner "Running './configure' for icinga-core"
     ./configure --prefix=/usr/local/icinga/icinga-core --enable-idoutils \
     --enable-nanosleep --enable-ssl --with-perlcache --enable-embedded-perl
     show_banner "Running 'make all'"
@@ -84,7 +84,7 @@ install_icinga () {
     # from apache2.2-common
     show_banner "Enabling icinga site via sites-enabled/a2ensite"
     /usr/sbin/a2ensite icinga
-    cd ..
+    cd $START_DIR
 } # icinga-core
 
 ## INSTALL_ICINGA_WEB ##
@@ -99,14 +99,20 @@ install_icinga_web () {
         php5-xsl php5-pdo php5-soap php5-gd php5-ldap php5-mysql
 
     if [ ! -e "icinga-web-${VERSION}.tar.gz" ]; then
+        show_banner "Downloading icinga-web version ${VERSION}"
         wget -O icinga-web-${VERSION}.tar.gz \
         ${SF_BASE}/icinga-web/${VERSION}/icinga-web-${VERSION}.tar.gz/download
     fi
     if [ -d "icinga-web-${VERSION}" ]; then
+        show_banner "Removing old copy of icinga-core"
         rm -rf "icinga-web-${VERSION}"
     fi
+    #
+    show_banner "Unpacking icinga-core version ${VERSION}"
     tar -zxvf icinga-web-${VERSION}.tar.gz
     cd icinga-web-$VERSION
+    #
+    show_banner "Running './configure' for icinga-core"
     ./configure --prefix=/usr/local/icinga/icinga-web \
                 --with-web-user=www-data \
                 --with-web-group=www-data \
@@ -124,42 +130,37 @@ install_icinga_web () {
                 --with-api-host=localhost \
                 --with-api-port=3306 \
                 --with-api-socket="/var/run/mysqld/mysqld.sock"
+    show_banner "Running 'make install'"
     make install
+    show_banner "Running 'make install-apache-config'"
     make install-apache-config
+    show_banner "Running 'make install-javascript'"
     make install-javascript
-    # move the resulting file from /etc/apache2/conf.d to
-    # /etc/apache2/sites-available
     show_banner "Moving config file to sites-available"
-    ICINGA_WEB_FILES="icinga-web.conf charset localized-error-pages security"
-    for INSTALL_FILE in $ICINGA_WEB_FILES; do
-        if [ ! -e /etc/apache2/sites-available/icinga-web ]; then
-            /bin/mv /etc/apache2/conf.d/icinga-web.conf \
-                /etc/apache2/sites-available/icinga-web
-        else
-            echo "WARNING: /etc/apache2/sites-available/${INSTALL_FILE} exists"
-            echo "WARNING: Will not replace existing file"
-            echo "WARNING: Copy the file /etc/apache2/conf.d/${INSTALL_FILE}"
-            echo "WARNING: to /etc/apache2/sites-available/${INSTALL_FILE}"
-            echo "WARNING: to use the default ${INSTALL_FILE} config file"
-        fi
-    done
+    if [ ! -e /etc/apache2/sites-available/icinga-web ]; then
+        /bin/mv /etc/apache2/conf.d/icinga-web.conf \
+            /etc/apache2/sites-available/icinga-web
+    else
+        echo "WARNING: /etc/apache2/sites-available/icinga-web.conf exists"
+        echo "WARNING: Will not replace existing file"
+        echo "WARNING: Copy the file /etc/apache2/conf.d/icinga-web.conf"
+        echo "WARNING: to /etc/apache2/sites-available/icinga-web"
+        echo "WARNING: to use the default icinga-web config file"
+    fi
 
     # from apache2.2-common
     show_banner "Enabling icinga-web Apache config files via a2ensite"
-    for INSTALL_FILE in $ICINGA_WEB_FILES; do
-        /usr/sbin/a2ensite $INSTALL_FILE
-    done
-    cd ..
-} # icinga-core
-
-
-} # icinga-web
+    /usr/sbin/a2ensite icinga-web
+    cd $START_DIR
+} # install_icinga_web
 
 ## ICINGA-REPORTS ##
 install_icinga_reports () {
-    # icinga-reports
-    VERSION=1.6.0
+    local VERSION=1.6.0
+    local START_DIR=$PWD
+
     if [ ! -e "icinga-reports-${VERSION}.tar.gz" ]; then
+        show_banner "Downloading icinga-reports version ${VERSION}"
         wget -O icinga-reports-${VERSION}.tar.gz \
             ${SF_BASE}/icinga-reporting/${VERSION}/icinga-reports-${VERSION}.tar.gz/download
     fi
@@ -167,12 +168,11 @@ install_icinga_reports () {
         rm -rf "icinga-reports-${VERSION}"
     fi
     tar -zxvf icinga-reports-${VERSION}.tar.gz
-}
+} # install_icinga_reports
 
 ## ICINGA MOBILE ##
 install_icinga_mobile () {
-    # icinga-mobile
-    VERSION=0.1.0
+    local VERSION=0.1.0
     if [ ! -e "icinga-mobile-${VERSION}.zip" ]; then
         wget -O icinga-mobile-${VERSION}.zip \
         ${SF_BASE}/icinga-mobile/${VERSION}/icinga-mobile-${VERSION}.zip/download
@@ -185,11 +185,10 @@ install_icinga_mobile () {
 
 
 ## MAIN SCRIPT ##
-
 prereqs
-install_icinga
+install_icinga_core
 install_icinga_web
-#install_icinga_reports () {
+#install_icinga_reports
 exit 0
 
 # make the directory if it doesn't exist
