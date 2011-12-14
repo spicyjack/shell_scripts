@@ -21,8 +21,6 @@ prereqs () {
     show_banner "Adding 'icinga' user"
     /usr/sbin/useradd --system --create-home icinga
 
-
-
     # create and change to the build directory
     show_banner "Creating build directory"
     mkdir -p $ICINGA_BUILD_DIR
@@ -37,7 +35,8 @@ install_icinga_core () {
 
     # install prerequisites
     show_banner "Installing prerequisite packages for ${PKG}-core"
-    apt-get --assume-yes install apache2 build-essential libgd2-xpm-dev \
+    apt-get --assume-yes install apache2 apache2-mpm-prefork \
+        build-essential libgd2-xpm libgd2-xpm-dev \
         libjpeg62 libjpeg62-dev libpng12-0 libpng12-dev snmp libsnmp-base \
         libdbi0 libdbi0-dev libssl-dev mysql-client libperl-dev
 
@@ -218,6 +217,7 @@ install_icinga_mobile () {
 prereqs
 install_icinga_core
 install_icinga_web
+install_icinga_mobile
 #install_icinga_reports
 exit 0
 
