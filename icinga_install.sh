@@ -31,7 +31,6 @@ prereqs () {
 
 ## INSTALL_ICINGA ##
 install_icinga_core () {
-    # icinga
     local VERSION="1.6.1"
     local START_DIR=$PWD
     local PKG="icinga"
@@ -75,16 +74,16 @@ install_icinga_core () {
         /bin/mv /etc/apache2/conf.d/icinga.conf \
             /etc/apache2/sites-available/${PKG}-core
     else
-        echo "WARNING: /etc/apache2/sites-available/icinga file exists"
+        echo "WARNING: /etc/apache2/sites-available/${PKG}-core file exists"
         echo "WARNING: Will not replace existing file"
         echo "WARNING: Copy the file /etc/apache2/conf.d/icinga.conf"
-        echo "WARNING: to /etc/apache2/sites-available/icinga if you"
+        echo "WARNING: to /etc/apache2/sites-available/${PKG}-core if you"
         echo "WARNING: want to use the default icinga Apache config file"
     fi
 
     # from apache2.2-common
     show_banner "Enabling icinga site via sites-enabled/a2ensite"
-    /usr/sbin/a2ensite icinga
+    /usr/sbin/a2ensite ${PKG}-core
     cd $START_DIR
 } # icinga-core
 
@@ -94,11 +93,11 @@ install_icinga_web () {
     local START_DIR=$PWD
     local PKG="icinga-web"
 
-    # icinga-web
     # install prerequisites
     show_banner "Installing prerequisite packages for ${PKG}"
     apt-get --assume-yes install php5 php5-cli php-pear php5-xmlrpc \
-        php5-xsl php5-pdo php5-soap php5-gd php5-ldap php5-mysql
+        php5-xsl php5-gd php5-ldap php5-mysql
+        #php5-xsl php5-pdo php5-soap php5-gd php5-ldap php5-mysql
 
     if [ ! -e "${PKG}-${VERSION}.tar.gz" ]; then
         show_banner "Downloading ${PKG} version ${VERSION}"
@@ -106,11 +105,11 @@ install_icinga_web () {
         ${SF_BASE}/${PKG}/${VERSION}/${PKG}-${VERSION}.tar.gz/download
     fi
     if [ -d "${PKG}-${VERSION}" ]; then
-        show_banner "Removing old copy of icinga-core"
+        show_banner "Removing old copy of ${PKG}"
         rm -rf "${PKG}-${VERSION}"
     fi
     #
-    show_banner "Unpacking icinga-core version ${VERSION}"
+    show_banner "Unpacking ${PKG} version ${VERSION}"
     tar -zxvf ${PKG}-${VERSION}.tar.gz
     cd ${PKG}-$VERSION
     #
@@ -136,8 +135,8 @@ install_icinga_web () {
     make install
     show_banner "Running 'make install-apache-config'"
     make install-apache-config
-    show_banner "Running 'make install-javascript'"
-    make install-javascript
+    #show_banner "Running 'make install-javascript'"
+    #make install-javascript
     show_banner "Moving config file to sites-available"
     if [ ! -e /etc/apache2/sites-available/${PKG} ]; then
         if [ -e /etc/apache2/sites-available/${PKG}.conf ]; then
@@ -167,29 +166,52 @@ install_icinga_reports () {
     local START_DIR=$PWD
     local PKG="icinga-reports"
 
+    # install prerequisites
+    show_banner "Installing prerequisite packages for ${PKG}"
+    apt-get --assume-yes install libjasperreports-java
+
     if [ ! -e "${PKG}-${VERSION}.tar.gz" ]; then
         show_banner "Downloading ${PKG} version ${VERSION}"
         wget -O ${PKG}-${VERSION}.tar.gz \
             ${SF_BASE}/icinga-reporting/${VERSION}/${PKG}-${VERSION}.tar.gz/download
     fi
     if [ -d "${PKG}-${VERSION}" ]; then
+        show_banner "Removing old copy of ${PKG}"
         rm -rf "${PKG}-${VERSION}"
     fi
+    #
+    show_banner "Unpacking ${PKG} version ${VERSION}"
     tar -zxvf ${PKG}-${VERSION}.tar.gz
 } # install_icinga_reports
 
 ## ICINGA MOBILE ##
 install_icinga_mobile () {
+    local START_DIR=$PWD
+    local PKG="icinga-mobile"
     local VERSION=0.1.0
-    if [ ! -e "icinga-mobile-${VERSION}.zip" ]; then
-        wget -O icinga-mobile-${VERSION}.zip \
-        ${SF_BASE}/icinga-mobile/${VERSION}/icinga-mobile-${VERSION}.zip/download
+
+    if [ ! -e "${PKG}-${VERSION}.zip" ]; then
+        show_banner "Downloading ${PKG} version ${VERSION}"
+        wget -O ${PKG}-${VERSION}.zip \
+        ${SF_BASE}/${PKG}/${VERSION}/${PKG}-${VERSION}.zip/download
     fi
-    if [ -d "icinga-mobile-${VERSION}" ]; then
-        rm -rf "icinga-mobile-${VERSION}"
+    if [ -d "${PKG}-${VERSION}" ]; then
+        show_banner "Removing old copy of ${PKG}"
+        rm -rf "${PKG}-${VERSION}"
     fi
-    unzip icinga-mobile-${VERSION}.zip
-}
+    #
+    show_banner "Unpacking ${PKG} version ${VERSION}"
+    unzip ${PKG}-${VERSION}.zip
+    cd ${PKG}-$VERSION
+    #
+    show_banner "Running './configure' for ${PKG}"
+    ./configure \
+        --with-web-user=www-data \
+        --with-web-group=www-data \
+        --with-web-apache-path=/etc/apache2 \
+        --prefix=/usr/local/icinga/icinga-mobile
+
+} # install_icinga_mobile
 
 
 ## MAIN SCRIPT ##
