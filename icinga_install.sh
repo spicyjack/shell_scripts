@@ -1,9 +1,13 @@
 #!/bin/bash
 
+# docs
+# http://docs.icinga.org/1.6/en/cgiauth.html CGI Authentication
+
 # script variables
 CFG_PKG="icinga"
 CFG_DIR=/opt/${CFG_PKG}
 ICINGA_BUILD_DIR="/usr/local/src/icinga"
+ICINGA_HTPASS_FILE="/usr/local/icinga/icinga-core/etc/htpasswd.users"
 SF_BASE="http://sourceforge.net/projects/icinga/files"
 
 ### SCRIPT FUNCTIONS ###
@@ -62,10 +66,23 @@ install_icinga_core () {
     /usr/bin/time make install
     show_banner "Running 'make install-idoutils'"
     /usr/bin/time make install-idoutils
+    show_banner "Copying idoutils config and modules files from samples"
+    /bin/cp /usr/local/icinga/icinga-core/etc/ido2db.cfg-sample \
+        /usr/local/icinga/icinga-core/etc/ido2db.cfg
+    /bin/cp /usr/local/icinga/icinga-core/etc/idomod.cfg-sample \
+        /usr/local/icinga/icinga-core/etc/idomod.cfg
+    /bin/cp /usr/local/icinga/icinga-core/etc/modules/idoutils.cfg-sample \
+        /usr/local/icinga/icinga-core/etc/modules/idoutils.cfg
     show_banner "Running 'make install-config'"
     /usr/bin/time make install-config
     show_banner "Running 'make install-webconf'"
     /usr/bin/time make install-webconf
+    show_banner "Running 'make install-init'"
+    /usr/bin/time make install-init
+    show_banner "Running 'make install-commandmode'"
+    /usr/bin/time make install-commandmode
+    #show_banner "Running 'make install-dev-docu'"
+    #/usr/bin/time make install-dev-docu
     # move the resulting file from /etc/apache2/conf.d to
     # /etc/apache2/sites-available
     show_banner "Moving config file to sites-available"
@@ -78,6 +95,19 @@ install_icinga_core () {
         echo "WARNING: Copy the file /etc/apache2/conf.d/icinga.conf"
         echo "WARNING: to /etc/apache2/sites-available/${PKG}-core if you"
         echo "WARNING: want to use the default icinga Apache config file"
+    fi
+
+    # restart icinga
+    if [ -e /etc/init.d/icinga ]; then
+        show_banner "Restarting ${PKG}-core"
+        /etc/init.d/icinga restart
+    fi
+
+    # create an htpasswd file
+    if [ ! -e /usr/local/icinga/icinga-core/etc/htpasswd.users ]; then
+        show_banner "Creating top-level htpasswd file for icinga-core"
+        /usr/bin/htpasswd -b -c $ICINGA_HTPASS_FILE icingaadmin t3mb00
+        /usr/bin/htpasswd -b $ICINGA_HTPASS_FILE temboo t3mb00
     fi
 
     # from apache2.2-common
@@ -136,6 +166,8 @@ install_icinga_web () {
     make install-apache-config
     #show_banner "Running 'make install-javascript'"
     #make install-javascript
+    # FIXME this needs to be run by hand for now
+    #make db-initialize
     show_banner "Moving config file to sites-available"
     if [ ! -e /etc/apache2/sites-available/${PKG} ]; then
         if [ -e /etc/apache2/sites-available/${PKG}.conf ]; then
@@ -189,6 +221,10 @@ install_icinga_mobile () {
     local PKG="icinga-mobile"
     local VERSION=0.1.0
 
+    # install prerequisites
+    show_banner "Installing prerequisite packages for ${PKG}-core"
+    apt-get --assume-yes install autoconf
+
     if [ ! -e "${PKG}-${VERSION}.zip" ]; then
         show_banner "Downloading ${PKG} version ${VERSION}"
         wget -O ${PKG}-${VERSION}.zip \
@@ -201,14 +237,35 @@ install_icinga_mobile () {
     #
     show_banner "Unpacking ${PKG} version ${VERSION}"
     unzip ${PKG}-${VERSION}.zip
-    cd ${PKG}-$VERSION
+    #cd ${PKG}-$VERSION
+    cd ${PKG}
     #
+    show_banner "Generating './configure' for ${PKG}"
+    autoconf
     show_banner "Running './configure' for ${PKG}"
     ./configure \
         --with-web-user=www-data \
         --with-web-group=www-data \
         --with-web-apache-path=/etc/apache2 \
         --prefix=/usr/local/icinga/icinga-mobile
+    #
+    show_banner "Running 'make install'"
+    make install
+    show_banner "Running 'make install-apache-config'"
+    make install-apache-config
+    #show_banner "Running 'make install-javascript'"
+    #make install-javascript
+    show_banner "Moving config file to sites-available"
+    if [ ! -e /etc/apache2/sites-available/${PKG} ]; then
+        /bin/mv /etc/apache2/conf.d/${PKG}.conf \
+            /etc/apache2/sites-available/${PKG}
+    else
+        echo "WARNING: /etc/apache2/sites-available/${PKG}-core file exists"
+        echo "WARNING: Will not replace existing file"
+        echo "WARNING: Copy the file /etc/apache2/conf.d/icinga.conf"
+        echo "WARNING: to /etc/apache2/sites-available/${PKG}-core if you"
+        echo "WARNING: want to use the default icinga Apache config file"
+    fi
 
 } # install_icinga_mobile
 
