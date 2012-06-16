@@ -1,31 +1,25 @@
 #!/bin/bash
 
 # docs
-# http://docs.icinga.org/latest/en/
-
-# TODO
-# - create debian package scripts for icinga
-
-# Icinga versions
-# icinga-db comes in icinga-core
-ICINGA_CORE_VERSION="1.7.0"
-ICINGA_WEB_VERSION="1.7.0"
+# http://docs.icinga.org/1.6/en/cgiauth.html CGI Authentication
 
 # script variables
+CFG_PKG="icinga"
+CFG_DIR=/opt/${CFG_PKG}
 ICINGA_BUILD_DIR="/usr/local/src/icinga"
-ICINGA_BASE_URL="http://sourceforge.net/projects/icinga/files"
-
+ICINGA_HTPASS_FILE="/usr/local/icinga/icinga-core/etc/htpasswd.users"
+SF_BASE="http://sourceforge.net/projects/icinga/files"
 
 ### SCRIPT FUNCTIONS ###
 show_banner () {
-    show_banner_text="$*"
-    echo "############# ${show_banner_text} #############"
+    show_banner_TEXT="$*"
+    echo "############# ${show_banner_TEXT} #############"
 } # show_banner
 
 ### BEGIN MAIN SCRIPT ###
 
 ## PREREQS FUNCTION ##
-build_prereqs () {
+prereqs () {
     # create an icinga user
     # /usr/sbin/adduser --gid XXX --uid XXX --home XXX --disabled-login icinga
     show_banner "Adding 'icinga' user"
@@ -37,23 +31,18 @@ build_prereqs () {
     cd ${ICINGA_BUILD_DIR}
 } # prereqs
 
-# get a list of packages to test against with:
-# dpkg -l | tail -n +6 | awk '{print $2}'
-pkg_prereqs () {
-    REQUIRED_PACKAGES="apache2 apache2-mpm-prefork build-essential
-        libgd2-xpm libgd2-xpm-dev libjpeg62 libjpeg62-dev libpng12-0
-        libpng12-dev snmp libsnmp-base libdbi0 libdbi0-dev libssl-dev
-        mysql-client libperl-dev
-    " # REQUIRED_PACKAGES
-}
-
 ## INSTALL_ICINGA ##
 install_icinga_core () {
     local VERSION="1.6.1"
-    local PKG="icinga-core"
+    local START_DIR=$PWD
+    local PKG="icinga"
 
     # install prerequisites
-    show_banner "Installing prerequisite packages for ${PKG}"
+    show_banner "Installing prerequisite packages for ${PKG}-core"
+    apt-get --assume-yes install apache2 apache2-mpm-prefork \
+        build-essential libgd2-xpm libgd2-xpm-dev \
+        libjpeg62 libjpeg62-dev libpng12-0 libpng12-dev snmp libsnmp-base \
+        libdbi0 libdbi0-dev libssl-dev mysql-client libperl-dev
 
     if [ ! -e "${PKG}-${VERSION}.tar.gz" ]; then
         show_banner "Dowloading ${PKG}-core version $VERSION"
