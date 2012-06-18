@@ -5,6 +5,7 @@
 
 # TODO
 # - create debian package scripts for icinga
+# - use the MD5 sum posted on sourceforge to validate the download binary
 
 # Icinga versions
 # icinga-db comes in icinga-core
