@@ -8,13 +8,13 @@
 
 # Icinga versions
 # icinga-db comes in icinga-core
-ICINGA_CORE_VERSION="1.7.0"
-ICINGA_WEB_VERSION="1.7.0"
+ICINGA_CORE_VERSION="1.7.1"
+ICINGA_WEB_VERSION="1.7.1"
 
 # script variables
 ICINGA_BUILD_DIR="/usr/local/src/icinga"
+ICINGA_INSTALL_DIR="/usr/local/stow"
 ICINGA_BASE_URL="http://sourceforge.net/projects/icinga/files"
-
 
 ### SCRIPT FUNCTIONS ###
 show_banner () {
@@ -28,8 +28,11 @@ show_banner () {
 build_prereqs () {
     # create an icinga user
     # /usr/sbin/adduser --gid XXX --uid XXX --home XXX --disabled-login icinga
+    show_banner "Adding 'icinga' group"
+    /usr/bin/groupadd 
     show_banner "Adding 'icinga' user"
-    /usr/sbin/useradd --system --create-home icinga
+    /usr/sbin/useradd --system --home /var/lib/icinga --comment "Icinga User" \
+        --create-home icinga
 
     # create and change to the build directory
     show_banner "Creating build directory"
