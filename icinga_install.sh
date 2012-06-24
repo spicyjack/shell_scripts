@@ -48,12 +48,28 @@ build_prereqs () {
 
 # get a list of packages to test against with:
 # dpkg -l | tail -n +6 | awk '{print $2}'
-pkg_prereqs () {
+check_pkg_prereqs () {
     REQUIRED_PACKAGES="apache2 apache2-mpm-prefork build-essential
         libgd2-xpm libgd2-xpm-dev libjpeg62 libjpeg62-dev libpng12-0
         libpng12-dev snmp libsnmp-base libdbi0 libdbi0-dev libssl-dev
         mysql-client libperl-dev
     " # REQUIRED_PACKAGES
+
+    INSTALLED_PACKAGES=$(dpkg -l | tail -n +6 | awk '{print $2}')
+    REQUIRED_PACKAGES_FLAG=1
+
+    for PKG in $(echo ${REQUIRED_PACKAGES});
+    do
+        if [ $(echo ${INSTALLED_PACKAGES} | grep -c ${PKG}) -eq 0 ]; then
+            echo "Missing package: ${PKG}"
+            REQUIRED_PACKAGES_FLAG=0
+        fi
+    done
+    if [ $REQUIRED_PACKAGES_FLAG -eq 0 ]; then
+        echo "Please install the above missing packages and then"
+        echo "re-run this installer"
+        exit 1
+    fi
 }
 
 ## INSTALL_ICINGA ##
