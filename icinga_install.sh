@@ -29,11 +29,16 @@ show_banner () {
 build_prereqs () {
     # create an icinga user
     # /usr/sbin/adduser --gid XXX --uid XXX --home XXX --disabled-login icinga
-    show_banner "Adding 'icinga' group"
-    /usr/bin/groupadd 
-    show_banner "Adding 'icinga' user"
-    /usr/sbin/useradd --system --home /var/lib/icinga --comment "Icinga User" \
-        --create-home icinga
+    ICINGA_USER_STATUS=$(id icinga)
+    # does the icinga user already exist?
+    if [ $ICINGA_USER_STATUS -gt 0 ];
+        show_banner "Adding 'icinga' group"
+        /usr/bin/groupadd --gid 424
+        show_banner "Adding 'icinga' user"
+        /usr/sbin/useradd --system --gid 424 --uid 424 \
+            --home /var/lib/icinga --comment "Icinga User" \
+            --create-home icinga
+    fi
 
     # create and change to the build directory
     show_banner "Creating build directory"
@@ -53,7 +58,6 @@ pkg_prereqs () {
 
 ## INSTALL_ICINGA ##
 install_icinga_core () {
-    local VERSION="1.6.1"
     local PKG="icinga-core"
 
     # install prerequisites
