@@ -57,19 +57,22 @@ pkg_prereqs () {
 
 ## INSTALL_ICINGA ##
 install_icinga_core () {
-    local PKG="icinga-core"
+    local PKG="icinga"
+    local VERSION=${ICINGA_CORE_VERSION}
 
     # install prerequisites
-    show_banner "Installing prerequisite packages for ${PKG}"
+    #show_banner "Installing prerequisite packages for ${PKG}-${VERSION}"
+    # FIXME check for prerequisites before continuing
 
     if [ ! -e "${PKG}-${VERSION}.tar.gz" ]; then
-        show_banner "Dowloading ${PKG}-core version $VERSION"
-        wget -O ${PKG}-${VERSION}.tar.gz \
-        ${SF_BASE}/${PKG}/${VERSION}/${PKG}-${VERSION}.tar.gz/download
+        show_banner "Dowloading ${PKG} version ${ICINGA_VERSION}"
+        show_banner "to ${ICINGA_BUILD_DIR}"
+        wget -O $ICINGA_BUILD_DIR/${PKG}-${ICINGA_CORE_VERSION}.tar.gz \
+        ${SF_BASE}/${PKG}/${VERSION}/${PKG}-${ICINGA_CORE_VERSION}.tar.gz/download
     fi
-    if [ -d "${PKG}-${VERSION}" ]; then
-        show_banner "Removing old copy of ${PKG}-core"
-        rm -rf "${PKG}-${VERSION}"
+    if [ -d "${PKG}-${ICINGA_CORE_VERSION}" ]; then
+        show_banner "Removing old copy of ${PKG}-${ICINGA_CORE_VERSION}"
+        rm -rf "${PKG}-${ICINGA_CORE_VERSION}"
     fi
     show_banner "Unpacking ${PKG}-core version ${VERSION}"
     tar -zxvf ${PKG}-${VERSION}.tar.gz
@@ -296,23 +299,23 @@ install_icinga_mobile
 #install_icinga_reports
 exit 0
 
-# make the directory if it doesn't exist
-if [ -d $CFG_DIR ]; then
-  mkdir -p $CFG_DIR
-fi
-
+# make the directory for the configuration EBS volume if it doesn't exist
+#if [ -d $CFG_DIR ]; then
+#  mkdir -p $CFG_DIR
+#fi
 #mount -t ext4 /dev/sdj1 $CFG_DIR
 
-# move the existing nagios config out of the way
-mv /etc/${CFG_PKG} /etc/${CFG_PKG}.orig
-ln -s /opt/${CFG_PKG}/config /etc/${CFG_PKG}
-mv /usr/share/${CFG_PKG} /usr/share/${CFG_PKG}.orig
-ln -s /opt/${CFG_PKG}/share /usr/share/${CFG_PKG}
-mv /usr/lib/cgi-bin/ /usr/lib/cgi-bin/${CFG_PKG}
-ln -s /opt/${CFG_PKG}/cgi-bin /usr/lib/cgi-bin/${CFG_PKG}
+# move the existing nagios config out of the way so the config files on the
+# EBS volume can be used instead
+#mv /etc/${CFG_PKG} /etc/${CFG_PKG}.orig
+#ln -s /opt/${CFG_PKG}/config /etc/${CFG_PKG}
+#mv /usr/share/${CFG_PKG} /usr/share/${CFG_PKG}.orig
+#ln -s /opt/${CFG_PKG}/share /usr/share/${CFG_PKG}
+#mv /usr/lib/cgi-bin/ /usr/lib/cgi-bin/${CFG_PKG}
+#ln -s /opt/${CFG_PKG}/cgi-bin /usr/lib/cgi-bin/${CFG_PKG}
 
 # restart nagios with the new config
-/etc/init.d/${CFG_PKG} stop; sleep 2; /etc/init.d/${CFG_PKG} start
+#/etc/init.d/${CFG_PKG} stop; sleep 2; /etc/init.d/${CFG_PKG} start
 
 exit 0
 
