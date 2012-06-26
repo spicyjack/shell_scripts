@@ -77,10 +77,6 @@ install_icinga_core () {
     local PKG="icinga"
     local VERSION=${ICINGA_CORE_VERSION}
 
-    # install prerequisites
-    #show_banner "Installing prerequisite packages for ${PKG}-${VERSION}"
-    # FIXME check for prerequisites before continuing
-
     if [ ! -e "${PKG}-${VERSION}.tar.gz" ]; then
         show_banner "Dowloading ${PKG} version ${ICINGA_VERSION}"
         show_banner "to ${ICINGA_BUILD_DIR}"
@@ -123,17 +119,17 @@ install_icinga_core () {
     #/usr/bin/time make install-dev-docu
     # move the resulting file from /etc/apache2/conf.d to
     # /etc/apache2/sites-available
-    show_banner "Moving config file to sites-available"
-    if [ ! -e /etc/apache2/sites-available/${PKG}-core ]; then
-        /bin/mv /etc/apache2/conf.d/icinga.conf \
-            /etc/apache2/sites-available/${PKG}-core
-    else
-        echo "WARNING: /etc/apache2/sites-available/${PKG}-core file exists"
-        echo "WARNING: Will not replace existing file"
-        echo "WARNING: Copy the file /etc/apache2/conf.d/icinga.conf"
-        echo "WARNING: to /etc/apache2/sites-available/${PKG}-core if you"
-        echo "WARNING: want to use the default icinga Apache config file"
-    fi
+    #show_banner "Moving config file to sites-available"
+    #if [ ! -e /etc/apache2/sites-available/${PKG}-core ]; then
+    #    /bin/mv /etc/apache2/conf.d/icinga.conf \
+    #        /etc/apache2/sites-available/${PKG}-core
+    #else
+    #    echo "WARNING: /etc/apache2/sites-available/${PKG}-core file exists"
+    #    echo "WARNING: Will not replace existing file"
+    #    echo "WARNING: Copy the file /etc/apache2/conf.d/icinga.conf"
+    #    echo "WARNING: to /etc/apache2/sites-available/${PKG}-core if you"
+    #    echo "WARNING: want to use the default icinga Apache config file"
+    #fi
 
     # restart icinga
     if [ -e /etc/init.d/icinga ]; then
@@ -149,9 +145,9 @@ install_icinga_core () {
     fi
 
     # from apache2.2-common
-    show_banner "Enabling icinga site via sites-enabled/a2ensite"
-    /usr/sbin/a2ensite ${PKG}-core
-    cd $START_DIR
+    #show_banner "Enabling icinga site via sites-enabled/a2ensite"
+    #/usr/sbin/a2ensite ${PKG}-core
+    #cd $START_DIR
 } # icinga-core
 
 ## INSTALL_ICINGA_WEB ##
@@ -161,9 +157,9 @@ install_icinga_web () {
     local PKG="icinga-web"
 
     # install prerequisites
-    show_banner "Installing prerequisite packages for ${PKG}"
-    apt-get --assume-yes install php5 php5-cli php-pear php5-xmlrpc \
-        php5-xsl php5-gd php5-ldap php5-mysql
+    #show_banner "Installing prerequisite packages for ${PKG}"
+    #apt-get --assume-yes install php5 php5-cli php-pear php5-xmlrpc \
+    #    php5-xsl php5-gd php5-ldap php5-mysql
         #php5-xsl php5-pdo php5-soap php5-gd php5-ldap php5-mysql
 
     if [ ! -e "${PKG}-${VERSION}.tar.gz" ]; then
@@ -206,114 +202,33 @@ install_icinga_web () {
     #make install-javascript
     # FIXME this needs to be run by hand for now
     #make db-initialize
-    show_banner "Moving config file to sites-available"
-    if [ ! -e /etc/apache2/sites-available/${PKG} ]; then
-        if [ -e /etc/apache2/sites-available/${PKG}.conf ]; then
-            /bin/mv /etc/apache2/sites-available/${PKG}.conf \
-                /etc/apache2/sites-available/${PKG}
-        else
-            echo "ERROR: /etc/apache2/sites-available/${PKG}.conf"
-            echo "ERROR: not found; can't rename the config file"
-        fi
-    else
-        echo "WARNING: /etc/apache2/sites-available/${PKG} exists"
-        echo "WARNING: Will not replace existing file; Copy the file"
-        echo "WARNING: /etc/apache2/sites-available/${PKG}.conf"
-        echo "WARNING: to /etc/apache2/sites-available/${PKG}"
-        echo "WARNING: to use the default ${PKG} config file"
-    fi
+    #show_banner "Moving config file to sites-available"
+    #if [ ! -e /etc/apache2/sites-available/${PKG} ]; then
+    #    if [ -e /etc/apache2/sites-available/${PKG}.conf ]; then
+    #        /bin/mv /etc/apache2/sites-available/${PKG}.conf \
+    #            /etc/apache2/sites-available/${PKG}
+    #    else
+    #        echo "ERROR: /etc/apache2/sites-available/${PKG}.conf"
+    #        echo "ERROR: not found; can't rename the config file"
+    #    fi
+    #else
+    #    echo "WARNING: /etc/apache2/sites-available/${PKG} exists"
+    #    echo "WARNING: Will not replace existing file; Copy the file"
+    #    echo "WARNING: /etc/apache2/sites-available/${PKG}.conf"
+    #    echo "WARNING: to /etc/apache2/sites-available/${PKG}"
+    #    echo "WARNING: to use the default ${PKG} config file"
+    #fi
 
     # from apache2.2-common
-    show_banner "Enabling ${PKG} Apache config files via a2ensite"
-    /usr/sbin/a2ensite ${PKG}
-    cd $START_DIR
+    #show_banner "Enabling ${PKG} Apache config files via a2ensite"
+    #/usr/sbin/a2ensite ${PKG}
+    #cd $START_DIR
 } # install_icinga_web
 
-## ICINGA-REPORTS ##
-install_icinga_reports () {
-    local VERSION=1.6.0
-    local START_DIR=$PWD
-    local PKG="icinga-reports"
-
-    # install prerequisites
-    show_banner "Installing prerequisite packages for ${PKG}"
-    apt-get --assume-yes install libjasperreports-java
-
-    if [ ! -e "${PKG}-${VERSION}.tar.gz" ]; then
-        show_banner "Downloading ${PKG} version ${VERSION}"
-        wget -O ${PKG}-${VERSION}.tar.gz \
-            ${SF_BASE}/icinga-reporting/${VERSION}/${PKG}-${VERSION}.tar.gz/download
-    fi
-    if [ -d "${PKG}-${VERSION}" ]; then
-        show_banner "Removing old copy of ${PKG}"
-        rm -rf "${PKG}-${VERSION}"
-    fi
-    #
-    show_banner "Unpacking ${PKG} version ${VERSION}"
-    tar -zxvf ${PKG}-${VERSION}.tar.gz
-} # install_icinga_reports
-
-## ICINGA MOBILE ##
-install_icinga_mobile () {
-    local START_DIR=$PWD
-    local PKG="icinga-mobile"
-    local VERSION=0.1.0
-
-    # install prerequisites
-    show_banner "Installing prerequisite packages for ${PKG}-core"
-    apt-get --assume-yes install autoconf
-
-    if [ ! -e "${PKG}-${VERSION}.zip" ]; then
-        show_banner "Downloading ${PKG} version ${VERSION}"
-        wget -O ${PKG}-${VERSION}.zip \
-        ${SF_BASE}/${PKG}/${VERSION}/${PKG}-${VERSION}.zip/download
-    fi
-    if [ -d "${PKG}-${VERSION}" ]; then
-        show_banner "Removing old copy of ${PKG}"
-        rm -rf "${PKG}-${VERSION}"
-    fi
-    #
-    show_banner "Unpacking ${PKG} version ${VERSION}"
-    unzip ${PKG}-${VERSION}.zip
-    #cd ${PKG}-$VERSION
-    cd ${PKG}
-    #
-    show_banner "Generating './configure' for ${PKG}"
-    autoconf
-    show_banner "Running './configure' for ${PKG}"
-    ./configure \
-        --with-web-user=www-data \
-        --with-web-group=www-data \
-        --with-web-apache-path=/etc/apache2 \
-        --prefix=/usr/local/icinga/icinga-mobile
-    #
-    show_banner "Running 'make install'"
-    make install
-    show_banner "Running 'make install-apache-config'"
-    make install-apache-config
-    #show_banner "Running 'make install-javascript'"
-    #make install-javascript
-    show_banner "Moving config file to sites-available"
-    if [ ! -e /etc/apache2/sites-available/${PKG} ]; then
-        /bin/mv /etc/apache2/conf.d/${PKG}.conf \
-            /etc/apache2/sites-available/${PKG}
-    else
-        echo "WARNING: /etc/apache2/sites-available/${PKG}-core file exists"
-        echo "WARNING: Will not replace existing file"
-        echo "WARNING: Copy the file /etc/apache2/conf.d/icinga.conf"
-        echo "WARNING: to /etc/apache2/sites-available/${PKG}-core if you"
-        echo "WARNING: want to use the default icinga Apache config file"
-    fi
-
-} # install_icinga_mobile
-
-
 ## MAIN SCRIPT ##
-prereqs
+check_pkg_prereqs
 install_icinga_core
 install_icinga_web
-install_icinga_mobile
-#install_icinga_reports
 exit 0
 
 # make the directory for the configuration EBS volume if it doesn't exist
