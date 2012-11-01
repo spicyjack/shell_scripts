@@ -26,13 +26,20 @@ then
     usage
 fi
 
+which cdrdao > /dev/null 2>&1
+CDRDAO_WHICH_STATUS=$?
+if [ $CDRDAO_WHICH_STATUS -gt 0 ]; then
+    echo 'ERROR: cdrdao not found in $PATH'
+    exit 1
+fi
+
 # Initialize Varialbles
 path=NULL
 tmpfile=/tmp/tmp.toc
 #DEVICE=ATAPI:16,0,0
 #DEVICE=ATA:1,0,0
-#DEVICE="IODVDServices/0"
-DEVICE="0,1,0"
+DEVICE="IODVDServices/0"
+#DEVICE="0,1,0"
 DRIVER="generic-mmc-raw"
 
 # Parse command line
@@ -72,10 +79,10 @@ cd "${path}"
 path=`/bin/pwd`
 
 # check for wav files in $path
-wavfiles=`ls *.wav 2> /dev/null | wc -l`
+wavfiles=$(ls *.wav 2> /dev/null | wc -l)
 if [ $wavfiles -eq 0 ]
 then
-    echo -e "\nERROR: No wav files found in $path\n"
+    echo "\nERROR: No wav files found in $path\n"
     exit 1
 fi
 
@@ -87,8 +94,8 @@ for i in `ls *.wav`; do
 done
 
 # burn CD and eject
-echo -e "\nBurning waves in $path"
-echo -e "\nPrompting for SUDO password:"
+/bin/echo -e "\nBurning waves in $path"
+/bin/echo -e "\nPrompting for SUDO password:"
 sudo time cdrdao write --device $DEVICE --driver $DRIVER --eject -n $tmpfile
 
 # clean-up
