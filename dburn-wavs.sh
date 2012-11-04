@@ -38,7 +38,8 @@ path=NULL
 tmpfile=/tmp/tmp.toc
 #DEVICE=ATAPI:16,0,0
 #DEVICE=ATA:1,0,0
-DEVICE="IODVDServices/0"
+#DEVICE="IODVDServices/0"
+DEVICE="IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/SATA@1F,2/AppleAHCI/PRT0@0/IOAHCIDevice@0/IOAHCISerialATAPI/IOSCSIPeripheralDeviceNub/IOSCSIPeripheralDeviceType05/IODVDServices"
 #DEVICE="0,1,0"
 DRIVER="generic-mmc-raw"
 
