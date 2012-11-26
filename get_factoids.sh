@@ -6,5 +6,5 @@ OUTPUT_DIR='/var/www/purl/html/Prospero'
 for FILE in Prospero-are.dir Prospero-are.pag Prospero-is.dir Prospero-is.pag;
 do
     # -q quiet
-    wget -q -O $OUTPUT_DIR/$FILE $SOURCE_URI/$FILE
+    wget -q -O "$OUTPUT_DIR/$FILE" "$SOURCE_URI/$FILE"
 done
