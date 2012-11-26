@@ -1,7 +1,7 @@
 #!/bin/sh
 
-SOURCE_URI='http://sbih.org/Prospero'
-OUTPUT_DIR='/var/www/purl/html/Prospero'
+SOURCE_URI=${SOURCE_URI:-http://sbih.org/Prospero}
+OUTPUT_DIR=${OUTPUT_DIR:-/var/www/purl/html/Prospero}
 #WGET_OPTS="-N"
 for FILE in Prospero-are.dir Prospero-are.pag Prospero-is.dir Prospero-is.pag;
 do
