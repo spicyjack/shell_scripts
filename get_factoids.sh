@@ -21,6 +21,8 @@ do
     # TODO parse the old and new factoid files, and compare by key/value?
     if [ $NEW_FILE_SIZE -gt $OLD_FILE_SIZE ]; then
         mv -f ${TEMP_DIR}/${FILE} ${OUTPUT_DIR}/${FILE}
+    else
+        rm -f ${TEMP_DIR}/${FILE}
     fi
 done
 
