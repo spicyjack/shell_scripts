@@ -1,16 +1,18 @@
 #!/bin/sh
 
-#source common.cfg
-
 /usr/local/bin/qemu-system-arm \
-    -kernel kernel-qemu \
+    -name raspi \
+    -kernel raspi.kernel-qemu \
     -cpu arm1176 \
     -m 256 \
     -M versatilepb \
     -no-reboot \
     -localtime \
     -monitor stdio \
-    -serial telnet::4444,server,nowait \
+    -serial telnet::31023,server,nowait \
+    -redir tcp:31022::22 \
+    -redir tcp:31080::80 \
+    -redir tcp:31443::443 \
     -hda 2012-10-28-wheezy-raspbian.img \
     -hdb debian_wheezy_armhf.qcow2 \
     -append "root=/dev/sda2 panic=1" \
