@@ -26,3 +26,7 @@ do
     fi
 done
 
+# make a tarball in order to make downloads easier
+cd $OUTPUT_DIR
+/bin/tar -cjvf factoids.tar.bz2 Prospero*
+
