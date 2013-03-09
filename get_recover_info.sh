@@ -10,11 +10,12 @@ echo "=-=-=-=-=-= Recovery info for $(cat /etc/hostname) =-=-=-=-=-=" \
 # this should grab all of the raw devices, without grabbing partitions on
 # those devices as well
 RAW_DISKS=$(/bin/cat /proc/diskstats | grep -v "0 0 0 0" \
-    | awk '{print $3}' | grep -v '[0-9]$')
+    | awk '{print $3}' | grep -v '[0-9]$' | sort)
 for DISK in $RAW_DISKS;
 do
     echo "#### fdisk: ${DISK} ####" >> $OUTPUT_FILE
     /sbin/fdisk -l /dev/${DISK} >> $OUTPUT_FILE 2>&1
+    /bin/echo >> $OUTPUT_FILE
 done
 
 echo "#### mounts ####" >> $OUTPUT_FILE
