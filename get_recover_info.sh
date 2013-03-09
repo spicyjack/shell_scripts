@@ -1,23 +1,39 @@
 #!/bin/bash
 
 # dump recovery information to a text file
+OUTPUT_FILE="/etc/recovery.txt"
+echo "=-=-=-=-=-= Recovery info for $(cat /etc/hostname) =-=-=-=-=-=" \
+    > $OUTPUT_FILE
+/bin/echo >> $OUTPUT_FILE
 
-echo "#### fdisk ####" > /etc/recovery.txt
-/sbin/fdisk -l /dev/sda >> /etc/recovery.txt
-/bin/echo >> /etc/recovery.txt
+# get a list of disks without a number at the end of the device name;
+# this should grab all of the raw devices, without grabbing partitions on
+# those devices as well
+RAW_DISKS=$(/bin/cat /proc/diskstats | grep -v "0 0 0 0" \
+    | awk '{print $3}' | grep -v '[0-9]$')
+for DISK in $RAW_DISKS;
+do
+    echo "#### fdisk: ${DISK} ####" >> $OUTPUT_FILE
+    /sbin/fdisk -l /dev/${DISK} >> $OUTPUT_FILE 2>&1
+done
 
-echo "#### disk usage ####" >> /etc/recovery.txt
-/bin/df >> /etc/recovery.txt
-/bin/echo >> /etc/recovery.txt
+echo "#### mounts ####" >> $OUTPUT_FILE
+/bin/cat /proc/mounts >> $OUTPUT_FILE
+/bin/echo >> $OUTPUT_FILE
 
-echo "#### network information ####" >> /etc/recovery.txt
-/sbin/ifconfig >> /etc/recovery.txt
-/bin/echo >> /etc/recovery.txt
-/sbin/route -n >> /etc/recovery.txt
-/bin/echo >> /etc/recovery.txt
+echo "#### disk usage ####" >> $OUTPUT_FILE
+/bin/df >> $OUTPUT_FILE
+/bin/echo >> $OUTPUT_FILE
 
-echo "#### package listing ####" >> /etc/recovery.txt
-#/usr/bin/dpkg -l >> /etc/recovery.txt
+echo "#### network interfaces ####" >> $OUTPUT_FILE
+/sbin/ifconfig >> $OUTPUT_FILE
+
+echo "#### network routes ####" >> $OUTPUT_FILE
+/sbin/route -n >> $OUTPUT_FILE
+/bin/echo >> $OUTPUT_FILE
+
+echo "#### package listing ####" >> $OUTPUT_FILE
+#/usr/bin/dpkg -l >> $OUTPUT_FILE
 cd /var/lib/dpkg/info/
-/bin/ls *.list | /bin/sed 's/\.list//' >> /etc/recovery.txt
+/bin/ls *.list | /bin/sed 's/\.list//' >> $OUTPUT_FILE
 
