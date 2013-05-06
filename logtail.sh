@@ -4,7 +4,7 @@
 
 /usr/bin/tail -F /var/log/$1 \
     | /bin/grep --line-buffered -v imapd \
-    | ~/src/perl.hg/acl.pl
+    | ~/src/perl.git/acl.pl
 # changed the acl.pl script to suppress imapd logins
 
 #/usr/bin/tail -F /var/log/$1 \
