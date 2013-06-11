@@ -1,0 +1,103 @@
+#!/bin/bash
+# ---------------------------------------------------------------------
+# handy rotating-filesystem-snapshot utility
+
+# ------------- system commands used by this script --------------------
+ID='/usr/bin/id';
+ECHO='/bin/echo';
+MOUNT='/bin/mount';
+RM='/bin/rm';
+CP='/bin/cp';
+TOUCH='/bin/touch';
+RSYNC='/usr/bin/rsync';
+
+# ------------- file locations ----------------------------------------
+# Need to be manually changed
+MOUNT_DEVICE=/dev/sdb1;
+MOUNT_DISK=/mnt/usbdisk1;
+
+# ------------- backup configuration
+# Need to be manually changed
+BACKUP_DIRS="/home \
+             /usr \
+             /etc";
+TODAY_DATE=`date +%F`
+YESTERDAY_DATE=`date +%F -d "-1 day"`;
+OLD_BACKUPS_DIR=oldbkup;
+LOG_FILES_DIR=logfiles;
+BACKUP_NAME=bkup;
+CURRENT_BACKUP=current;
+BACKUP_TIME=`date +%T | sed 's/://g'`;
+# ------------- the script itself --------------------------------------
+# make sure we're running as root
+if (( `$ID -u` != 0 )); then { $ECHO "Sorry, must be root.  Exiting..."; exit; } fi
+
+# Backup Routine
+
+echo "Starting snapshot on "`date` | tee -a \
+    ${MOUNT_DISK}/${LOG_FILES_DIR}/${BACKUP_NAME}${TODAY_DATE}.log
+
+# attempt to remount the RW mount point as RW; else abort
+$MOUNT -o remount,rw $MOUNT_DEVICE $MOUNT_DISK ;
+if (( $? )); then
+{
+    $ECHO "snapshot: could not remount $MOUNT_DISK readwrite";
+    exit;
+}
+fi;
+
+# Make directories in External USB HD for backup directories
+# if already there -p option just exit
+#
+for BACKUP_DIR in $BACKUP_DIRS
+do
+mkdir -p ${MOUNT_DISK}${BACKUP_DIR};
+done
+
+mkdir -p ${MOUNT_DISK}/${LOG_FILES_DIR};
+mkdir -p ${MOUNT_DISK}/${OLD_BACKUPS_DIR};
+
+# rotating snapshots
+for BACKUP_DIR in $BACKUP_DIRS
+do
+
+  # step 1: make hard-link-only copy of the latest snapshot,
+  # into yesterdays date directory
+  if [ -d ${MOUNT_DISK}${BACKUP_DIR} ] ; then
+  {
+      if [ -d ${MOUNT_DISK}/${OLD_BACKUPS_DIR}${BACKUP_DIR}${YESTERDAY_DATE} ] ; then
+      {
+      YESTERDAY_DATE=${YESTERDAY_DATE}_Time${BACKUP_TIME};
+      }
+      fi;
+      $CP -al ${MOUNT_DISK}${BACKUP_DIR} \
+      ${MOUNT_DISK}/${OLD_BACKUPS_DIR}/${BACKUP_DIR}${YESTERDAY_DATE} \
+2>&1 | tee -a ${MOUNT_DISK}/${LOG_FILES_DIR}/${BACKUP_NAME}${TODAY_DATE}.log;
+
+echo "finishing link copy......" | tee -a \
+    ${MOUNT_DISK}/${LOG_FILES_DIR}/${BACKUP_NAME}${TODAY_DATE}.log
+
+}
+fi;
+
+  # step 2: rsync from the system into the latest snapshot
+
+  $RSYNC -av --delete --numeric-ids $BACKUP_DIR/ \
+${MOUNT_DISK}${BACKUP_DIR} \
+2>&1 | tee -a ${MOUNT_DISK}/${LOG_FILES_DIR}/${BACKUP_NAME}${TODAY_DATE}.log
+
+  # step 3: update the mtime of ${BACKUP_NAME}${CURRENT_BACKUP} to reflect the
+  # snapshot time
+  $TOUCH ${MOUNT_DISK}${BACKUP_DIR};
+done
+
+# now remount the RW snapshot mountpoint as readonly
+
+$MOUNT -o remount,ro $MOUNT_DEVICE $MOUNT_DISK ;
+if (( $? )); then
+{
+    $ECHO "snapshot: could not remount $MOUNT_DISK readonly";
+    exit;
+} fi;
+
+
