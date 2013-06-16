@@ -44,10 +44,10 @@ x
 #
 ###############################################################################
 
-UNAME=`uname -s`
-
-if [ $UNAME == "Darwin" ]; then
-    echo "Script is currently broken in Darwin"
+# Check for gnupg
+GPG_BIN=$(which gpg)
+if [ $? -gt 0 ]; then
+    echo "ERROR: Can't find 'gpg' binary in \$PATH"
     exit 1
 fi
 
@@ -79,7 +79,7 @@ mkdir -p $TEMPDIR || exit 1
 # a new file.
 #
 if [ -e "$FILE" ]; then
-    if ! gpg < "$FILE" >$TEMPDIR/data.txt; then
+    if ! $GPG_BIN < "$FILE" >$TEMPDIR/data.txt; then
         rm -rf $TEMPDIR
         echo
         echo "Aborting."
@@ -106,15 +106,15 @@ if ! diff $TEMPDIR/data.txt $TEMPDIR/orig >/dev/null; then
     case $YESNO in
         n*|N*) echo "Discarding changes."
         ;;
-#        *) while ! gpg -c -a <$TEMPDIR/data.txt >$TEMPDIR/data.gpg; do
+        #*) while ! gpg -c -a <$TEMPDIR/data.txt >$TEMPDIR/data.gpg; do
         *) while ! gpg --encrypt --armor --sign \
             --default-recipient-self --default-key 0x8D7CEDE6 \
             <$TEMPDIR/data.txt >$TEMPDIR/data.gpg; do
                clear
                echo "Uh, please try again..."
                echo
-               
-           done 
+
+           done
            cat <<tac >>$TEMPDIR/data.gpg
 
 Edited by gpg-edit: http://bre.klaki.net/programs/gpg-edit.txt
@@ -150,4 +150,6 @@ for a in $(seq 1 25); do
   sync
 done
 rm -rf $TEMPDIR
+unset BLOCKS GPG_BIN
+
 echo " done."
