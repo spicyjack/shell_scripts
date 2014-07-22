@@ -1,5 +1,5 @@
 #!/bin/sh
-qemu-system-ppc \
+/usr/local/bin/qemu-system-ppc \
     -bios /usr/local/share/qemu/openbios-ppc \
     -cpu G4 \
     -M mac99 \
@@ -8,7 +8,7 @@ qemu-system-ppc \
     -pidfile ppc-base.pid \
     -serial telnet::4444,server,nowait \
     -localtime \
-    -vnc 127.0.0.1:1 \
+    -vnc :1 -k en-us \
     -usbdevice tablet \
     -monitor stdio \
     -redir tcp:28022::22 \
@@ -19,7 +19,7 @@ qemu-system-ppc \
     -boot order=cd,once=d,menu=on \
     -prom-env 'boot-args=-v' \
     -hda ppc_disk.qcow2 \
-    -cdrom /Users/Shared/Files/ISOs/debian-7.6.0-powerpc-CD-1.iso
+    -cdrom /Volumes/Raid/Files/ISOs/debian-7.6.0-powerpc-CD-1.iso
 
 
 #    -append "root=/dev/mapper/mips_builder-root console=ttyS0"
