@@ -16,7 +16,8 @@ PIDFILE=qemu.pid
     -redir tcp:13022::22 \
     -cdrom winxpsp2.iso \
     -boot order=cd,menu=on \
-    -hda disk1.qcow2
+    -hda disk1.qcow2 \
+    -hdb nbd+unix://?socket=${PWD}/winxp32-socket
 
 # you can't use this if you background qemu, as the PID file will be removed
 # as soon as the shell returns from backgrounding the qemu process
