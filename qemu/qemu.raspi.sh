@@ -25,5 +25,16 @@
 #    -initrd initrd.img-2.6.26-1-versatile \
 #    -append "root=/dev/sda1"
 
+# /usr/local/bin/qemu-system-arm \
+# -name "Raspberry Pi Emulator" \
+# -kernel kernel-qemu \
+# -cpu arm1176 \
+# -m 256 \
+# -M versatilepb \
+# -serial stdio \
+# -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
+# -drive file=2016-02-26-raspbian-jessie.img,index=0,media=disk,format=raw \
+# -net nic \
+# -net user,hostfwd=tcp::3122-:22,hostfwd=tcp::3180-:80
 
 # vim: set paste :
