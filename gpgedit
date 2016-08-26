@@ -45,7 +45,7 @@ x
 ###############################################################################
 
 # Check for gnupg
-GPG_BIN=$(which gpg)
+GPG_BIN=$(which gpg1)
 if [ $? -gt 0 ]; then
     echo "ERROR: Can't find 'gpg' binary in \$PATH"
     exit 1
@@ -60,7 +60,7 @@ fi
 #
 FILE=$1
 if [ "$FILE" = "" ]; then
-    echo "Usage: gpg-edit filename"
+    echo "Usage: gpgedit filename"
     exit 1
 fi
 
@@ -107,7 +107,7 @@ if ! diff $TEMPDIR/data.txt $TEMPDIR/orig >/dev/null; then
         n*|N*) echo "Discarding changes."
         ;;
         #*) while ! gpg -c -a <$TEMPDIR/data.txt >$TEMPDIR/data.gpg; do
-        *) while ! gpg --encrypt --armor --sign \
+        *) while ! $GPG_BIN --encrypt --armor --sign \
             --default-recipient-self --default-key 0x8D7CEDE6 \
             <$TEMPDIR/data.txt >$TEMPDIR/data.gpg; do
                clear
