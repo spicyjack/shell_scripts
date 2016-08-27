@@ -2,22 +2,29 @@
 
 /usr/local/bin/qemu-system-arm \
    -name RetroPie \
-   -kernel kernel.img \
+   -kernel kernel7.img \
    -cpu arm1176 \
    -m 256 \
-   -M versatilepb \
+   -machine raspi2 \
    -no-reboot \
    -localtime \
    -monitor stdio \
    -serial telnet::31023,server,nowait \
-   -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
+   -append "root=/dev/mmcblk0p2 panic=1 rootfstype=ext4 rw init=/bin/bash" \
+   -dtb bcm2709-rpi-2-b.dtb \
    -drive file=retropie-4.0-rpi2_rpi3.img,index=0,media=disk,format=raw \
-   -net nic \
-   -net user hostfwd=tcp::31022-:22 \
-   -net user hostfwd=tcp::31080-:80 \
-   -net user hostfwd=tcp::31443-:443
 
+#   -net nic \
+#   -net user,hostfwd=tcp::31022-:22 \
+#   -net user,hostfwd=tcp::31080-:80 \
+#   -net user,hostfwd=tcp::31443-:443
 
+#   -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash" \
+
+# Raspberry Pi (boots): kernel-qemu
+# Raspberry Pi (boots): kernel7.img
+# Chromium image (works): chromium.zImage / chromium.rootfs.ext2
+# ARM test image: zImage.integrator / arm_root.img
 #    -redir tcp:29022::22 \
 #    -redir tcp:29000::8000 \
 #    -cdrom /Volumes/Raid/Users/brian/Files/ISOs/debian-testing-armhf-CD-1.iso \
