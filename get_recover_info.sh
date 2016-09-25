@@ -18,6 +18,10 @@ do
     /bin/echo >> $OUTPUT_FILE
 done
 
+echo "#### loopback mounts ####" >> $OUTPUT_FILE
+/sbin/losetup -a >> $OUTPUT_FILE
+/bin/echo >> $OUTPUT_FILE
+
 echo "#### mounts ####" >> $OUTPUT_FILE
 /bin/cat /proc/mounts >> $OUTPUT_FILE
 /bin/echo >> $OUTPUT_FILE
