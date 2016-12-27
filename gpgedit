@@ -79,7 +79,7 @@ mkdir -p $TEMPDIR || exit 1
 # a new file.
 #
 if [ -e "$FILE" ]; then
-    if ! $GPG_BIN < "$FILE" >$TEMPDIR/data.txt; then
+    if ! $GPG_BIN --default-key 0x8D7CEDE6 < "$FILE" >$TEMPDIR/data.txt; then
         rm -rf $TEMPDIR
         echo
         echo "Aborting."
