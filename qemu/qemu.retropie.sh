@@ -2,18 +2,22 @@
 
 /usr/local/bin/qemu-system-arm \
    -name RetroPie \
-   -kernel kernel7.img \
+   -kernel kernel-qemu \
    -cpu arm1176 \
    -m 256 \
-   -machine raspi2 \
+   -machine versatilepb \
    -no-reboot \
    -localtime \
    -monitor stdio \
    -serial telnet::31023,server,nowait \
-   -append "root=/dev/mmcblk0p2 panic=1 rootfstype=ext4 rw init=/bin/bash" \
+   -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
+   -net nic -net user,hostfwd=tcp::3122-:22,hostfwd=tcp::3180-:80 \
    -dtb bcm2709-rpi-2-b.dtb \
-   -drive file=retropie-4.0-rpi2_rpi3.img,index=0,media=disk,format=raw \
+   -drive file=2016-11-25-raspbian-jessie-lite.img,index=0,media=disk,format=raw \
 
+#   -kernel kernel7.img \
+#   -machine raspi2 \
+#   -append "root=/dev/mmcblk0p2 panic=1 rootfstype=ext4 rw init=/bin/bash" \
 #   -net nic \
 #   -net user,hostfwd=tcp::31022-:22 \
 #   -net user,hostfwd=tcp::31080-:80 \
