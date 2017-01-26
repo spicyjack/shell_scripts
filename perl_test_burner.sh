@@ -14,6 +14,9 @@ if [ -d $TEST_PATH ]; then
    TEST_FILES=$(find $TEST_PATH -name '*.t')
 elif [ -f $TEST_PATH ]; then
    TEST_FILES=$TEST_PATH
+else
+   echo "ERROR: Test path '${TEST_PATH}' not found"
+   exit 1
 fi
 
 
