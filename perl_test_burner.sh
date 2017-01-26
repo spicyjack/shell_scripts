@@ -41,13 +41,20 @@ do
       if [ $? -eq 0 ]; then
          mv $TEST_LOGFILE ${TEST_LOGFILE}.pass.log
          PASS=$((PASS + 1))
+         CURRENT_TEST="passed"
       else
          mv $TEST_LOGFILE ${TEST_LOGFILE}.fail.log
          FAIL=$((FAIL + 1))
+         CURRENT_TEST="failed"
       fi
 
       # write a test status line
-      printf "%s test #%3u -> pass: %2u; fail: %2u\n" \
-         $TEST_BASE_FILENAME $TEST_COUNT $PASS $FAIL
+      printf "%s test #%3u -> %s (stats: pass: %2u; fail: %2u)\n" \
+         $TEST_BASE_FILENAME $TEST_COUNT $CURRENT_TEST $PASS $FAIL
+
+      # print the logfile path if the test failed
+      if [ $CURRENT_TEST == "failed" ]; then
+         echo "- Test filename: ${TEST_LOGFILE}.fail.log"
+      fi
    done
 done
