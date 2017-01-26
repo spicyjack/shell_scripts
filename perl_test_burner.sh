@@ -49,7 +49,7 @@ do
       fi
 
       # write a test status line
-      printf "%s test #%3u -> %s (stats: pass: %2u; fail: %2u)\n" \
+      printf "%s test #%3u -> %s (stats: pass - %2u; fail - %2u)\n" \
          $TEST_BASE_FILENAME $TEST_COUNT $CURRENT_TEST $PASS $FAIL
 
       # print the logfile path if the test failed
