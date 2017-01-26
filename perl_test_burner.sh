@@ -26,8 +26,14 @@ do
    FAIL=0
    for TEST_COUNT in $(seq 1 100);
    do
+      OS_NAME=$(uname -s)
+      if [ $OS_NAME == "Darwin" ]; then
+         TEMP_TEMPLATE="${TEST_BASE_FILENAME}.XXXXXXXX"
+      else
+         TEMP_TEMPLATE="${TEST_BASE_FILENAME}"
+      fi
       # create the test logfile
-      TEST_LOGFILE=$(mktemp -t ${TEST_BASE_FILENAME})
+      TEST_LOGFILE=$(mktemp -t ${TEMP_TEMPLATE})
       # run the test
       prove -cl $TEST_FILE > $TEST_LOGFILE 2>&1
       # mark the test as pass/fail
