@@ -27,10 +27,11 @@ do
    for TEST_COUNT in $(seq 1 100);
    do
       OS_NAME=$(uname -s)
+      # set up the logfile 'mktemp' template name
       if [ $OS_NAME == "Darwin" ]; then
-         TEMP_TEMPLATE="${TEST_BASE_FILENAME}.XXXXXXXX"
-      else
          TEMP_TEMPLATE="${TEST_BASE_FILENAME}"
+      else
+         TEMP_TEMPLATE="${TEST_BASE_FILENAME}.XXXXXXXX"
       fi
       # create the test logfile
       TEST_LOGFILE=$(mktemp -t ${TEMP_TEMPLATE})
