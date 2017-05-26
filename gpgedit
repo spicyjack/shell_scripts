@@ -7,7 +7,7 @@ gpg-edit 20050106               Bjarni Rúnar Einarsson, http://bre.klaki.net/
 x
 # This is a wrapper script to simplify editing of text files which are
 # stored symmetrically encrypted with GnuPG.
-# 
+#
 # Usage:
 #
 #   gpg-edit file.txt
