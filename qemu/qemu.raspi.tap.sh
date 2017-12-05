@@ -15,6 +15,7 @@ IMG_FILE="2017-11-29-raspbian-stretch-lite.img"
   -net nic \
   -net tap,ifname=tap0,script=no,downscript=no \
   -drive file=${IMG_FILE},media=disk,format=raw \
+  -drive file=swap_disk.raw,media=disk,format=raw \
   -drive file=transfer_disk.img,media=disk,format=raw \
   -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \
 
