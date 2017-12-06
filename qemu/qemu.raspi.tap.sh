@@ -1,8 +1,7 @@
 #!/bin/sh
 IMG_FILE="2017-11-29-raspbian-stretch-lite.img"
 
-#sudo /usr/local/bin/qemu-system-arm \
-/usr/local/bin/qemu-system-arm \
+sudo /usr/local/bin/qemu-system-arm \
   -name raspi \
   -kernel kernel-qemu-4.4.34-jessie \
   -cpu arm1176 \
