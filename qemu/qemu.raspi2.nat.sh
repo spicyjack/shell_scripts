@@ -3,8 +3,9 @@ IMG_FILE="2017-11-29-raspbian-stretch-lite.img"
 
 # what are we appending to the Linux boot command line?
 BOOT_APPEND="rw earlyprintk loglevel=8 dwc_otg.lpm_enable=0"
-BOOT_APPEND="${BOOT_APPEND} panic=1 console=ttyAMA0,115200"
+BOOT_APPEND="${BOOT_APPEND} panic=1 console=ttyAMA0,115200 console=tty1"
 BOOT_APPEND="${BOOT_APPEND} root=/dev/mmcblk0p2 rootfstype=ext4 rw"
+BOOT_APPEND="${BOOT_APPEND} rootdelay=5"
 
 # network port forwarding
 HOST_FWDS="hostfwd=tcp::4022-:22"
