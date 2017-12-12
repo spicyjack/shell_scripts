@@ -29,9 +29,10 @@ HOST_FWDS="${HOST_FWDS},hostfwd=tcp::5443-:443"
   -net nic \
   -net user,${HOST_FWDS} \
   -drive file=${IMG_FILE},if=sd,format=raw \
-  -drive file=swap_disk.img,if=sd,format=raw \
-  -drive file=transfer_disk.img,if=sd,format=raw \
   -append "${BOOT_APPEND}"
+
+#  -drive file=swap_disk.img,if=sd,format=raw \
+#  -drive file=transfer_disk.img,if=sd,format=raw \
 #  -usb \
 #  -usbdevice mouse -usbdevice keyboard \
 #  -device usb-mouse,bus=usb-bus.0 \
