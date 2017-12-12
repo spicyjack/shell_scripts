@@ -18,7 +18,7 @@ HOST_FWDS="${HOST_FWDS},hostfwd=tcp::5443-:443"
   -name raspi2 \
   -kernel kernel7.img \
   -dtb bcm2709-rpi-2-b.dtb \
-  -machine raspi2 \
+  -machine raspi2,usb=on \
   -cpu arm1176 \
   -m 1G \
   -smp 4 \
@@ -29,9 +29,9 @@ HOST_FWDS="${HOST_FWDS},hostfwd=tcp::5443-:443"
   -net nic \
   -net user,${HOST_FWDS} \
   -drive file=${IMG_FILE},if=sd,format=raw \
-  -usb \
-  -usbdevice mouse -usbdevice keyboard \
   -append "${BOOT_APPEND}"
+#  -usb \
+#  -usbdevice mouse -usbdevice keyboard \
 #  -device usb-mouse,bus=usb-bus.0 \
 #  -device usb-keyboard,bus=usb-bus.0 \
 
