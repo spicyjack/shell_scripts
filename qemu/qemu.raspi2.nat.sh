@@ -10,25 +10,31 @@ BOOT_APPEND="${BOOT_APPEND} rootwait"
 #BOOT_APPEND="${BOOT_APPEND} rootwait init=/bin/bash"
 
 # network port forwarding
-HOST_FWDS="hostfwd=tcp::4022-:22"
-HOST_FWDS="${HOST_FWDS},hostfwd=tcp::4080-:80"
-HOST_FWDS="${HOST_FWDS},hostfwd=tcp::4443-:443"
+HOST_FWDS="hostfwd=tcp::5022-:22"
+HOST_FWDS="${HOST_FWDS},hostfwd=tcp::5080-:80"
+HOST_FWDS="${HOST_FWDS},hostfwd=tcp::5443-:443"
 
 /usr/local/bin/qemu-system-arm \
   -name raspi2 \
   -kernel kernel7.img \
   -dtb bcm2709-rpi-2-b.dtb \
-  -M raspi2 \
+  -machine raspi2 \
   -cpu arm1176 \
   -m 1G \
   -smp 4 \
   -no-reboot \
   -localtime \
-  -serial stdio \
+  -monitor stdio \
+  -serial telnet::5023,server,nowait \
   -net nic \
   -net user,${HOST_FWDS} \
   -drive file=${IMG_FILE},if=sd,format=raw \
+  -usb \
+  -usbdevice mouse -usbdevice keyboard \
   -append "${BOOT_APPEND}"
+#  -device usb-mouse,bus=usb-bus.0 \
+#  -device usb-keyboard,bus=usb-bus.0 \
+
 
 #  -drive if=none,id=swap_stick,file=swap_disk.img,format=raw \
 #  -device nec-usb-xhci,id=xhci \
