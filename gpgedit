@@ -45,7 +45,7 @@ x
 ###############################################################################
 
 # Check for gnupg
-GPG_BIN=$(which gpg1)
+GPG_BIN=$(which gpg)
 if [ $? -gt 0 ]; then
     echo "ERROR: Can't find 'gpg' binary in \$PATH"
     exit 1
@@ -71,6 +71,7 @@ fi
 # makes cleanup simpler and helps us catch (and wipe) automatic backups
 # created by some editors.
 #
+
 TEMPDIR=~/.gpg-edit-$$
 umask 077
 mkdir -p $TEMPDIR || exit 1
@@ -79,7 +80,7 @@ mkdir -p $TEMPDIR || exit 1
 # a new file.
 #
 if [ -e "$FILE" ]; then
-    if ! $GPG_BIN --default-key 0x8D7CEDE6 < "$FILE" >$TEMPDIR/data.txt; then
+    if ! $GPG_BIN --decrypt < "$FILE" >$TEMPDIR/data.txt; then
         rm -rf $TEMPDIR
         echo
         echo "Aborting."
