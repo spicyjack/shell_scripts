@@ -12,6 +12,8 @@ check_for_errors () {
          continue
       fi
       #echo "Checking file: $LINE"
+      # this next bit is from:
+      # https://stackoverflow.com/questions/3752913/
       ERROR_COUNT=$(iconv -f utf-16 -t utf-8 "${LINE}" \
          | egrep -c "Inaccurate|ERROR")
       if [ $ERROR_COUNT -gt 0 ]; then
