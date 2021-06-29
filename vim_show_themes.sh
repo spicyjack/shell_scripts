@@ -42,7 +42,7 @@ item_color = dialog_color
 item_selected_color = button_active_color
 tag_selected_color = (YELLOW,BLUE,ON)
 tag_key_selected_color = (YELLOW,RED,ON)
-tag_color = (BLUE,BLACK,OFF)
+tag_color = (BLACK,BLUE,OFF)
 tag_key_color = (BLACK,RED,OFF)
 uarrow_color = (GREEN,WHITE,ON)
 darrow_color = uarrow_color
@@ -82,23 +82,41 @@ do
    echo "- ${COLOR_FILE}"
 done
 
-CMD="${DIALOG_PATH} --clear --colors --title 'VIM Color Schemes'"
-CMD="${CMD} --menu \"Choose the VIM color scheme to view...\n"
-CMD="${CMD}(Once VIM starts, use the 'q' key to exit)\""
-# --menu parameters
-# 1) screen height
-# 2) screen width
-# 3) menu box height
-CMD="${CMD} 20 50 10 ${COLOR_FILE_LIST} 2>${DIALOG_TEMP}"
-eval $CMD
+# hopefully 'true' is in $PATH
+while true;
+do
+   CMD="${DIALOG_PATH} --clear --colors --title 'VIM Color Schemes'"
+   CMD="${CMD} --menu \"Choose the VIM color scheme to view...\n"
+   CMD="${CMD}(Once VIM starts, use the 'q' key to exit)\""
+   # --menu parameters
+   # 1) screen height
+   # 2) screen width
+   # 3) menu box height
+   CMD="${CMD} 20 50 10 ${COLOR_FILE_LIST} 2>${DIALOG_TEMP}"
+   eval $CMD
+   EXIT_STATUS=$?
 
-SELECTED_COLOR=$(cat $DIALOG_TEMP)
-# this one works the treat
-# '-S' and '-c' are basically equivalent
-vim --cmd 'let no_plugin_maps = 1' \
-   -S '$VIMRUNTIME/syntax/hitest.vim' \
-   -c 'runtime! macros/less.vim'
-#vim -R -c 'runtime! macros/less.vim'
+   if [ $EXIT_STATUS -gt 0 ]; then
+      # user pressed something else besides "OK"
+      break
+   fi
+
+   SELECTED_COLOR=$(cat $DIALOG_TEMP)
+   # this one works the treat
+   # '-c': runs a command
+   # '-S': sources a file
+   # '-S' and '-c' are run at basically the same time
+   # '--cmd' runs before anything else
+#      -c "highlight"
+   vim --cmd 'let no_plugin_maps = 1' \
+      -S '$VIMRUNTIME/syntax/hitest.vim' \
+      -c "runtime! macros/less.vim" \
+      -c "colorscheme ${SELECTED_COLOR}"
+      -c "background dark"
+
+
+done
+
 # clean up
 rm -f $DIALOG_TEMP $DIALOGRC
 unset DIALOGRC
