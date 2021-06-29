@@ -70,7 +70,7 @@ if [ ! -d ${VIM_PATH}/colors ]; then
    exit 1
 fi
 
-echo "Currently installed 'colors' files:"
+#echo "Currently installed 'colors' files:"
 VIM_COLOR_FILES_LIST=$(ls "${VIM_PATH}/colors/" \
    | grep "vim$" \
    | sed '{s!${VIM_PATH}/colors!!g; s/.vim$//;}')
@@ -79,13 +79,17 @@ COLOR_FILE_LIST=""
 for COLOR_FILE in $(echo $VIM_COLOR_FILES_LIST);
 do
    COLOR_FILE_LIST="${COLOR_FILE_LIST} ${COLOR_FILE} \"\" "
-   echo "- ${COLOR_FILE}"
+   #echo "- ${COLOR_FILE}"
 done
 
 # hopefully 'true' is in $PATH
+SELECTED_COLOR=""
 while true;
 do
    CMD="${DIALOG_PATH} --clear --colors --title 'VIM Color Schemes'"
+   if [ -n $SELECTED_COLOR ]; then
+      CMD="${CMD} --default-item '${SELECTED_COLOR}'"
+   fi
    CMD="${CMD} --menu \"Choose the VIM color scheme to view...\n"
    CMD="${CMD}(Once VIM starts, use the 'q' key to exit)\""
    # --menu parameters
@@ -93,6 +97,8 @@ do
    # 2) screen width
    # 3) menu box height
    CMD="${CMD} 20 50 10 ${COLOR_FILE_LIST} 2>${DIALOG_TEMP}"
+   #echo $CMD
+   #sleep 5
    eval $CMD
    EXIT_STATUS=$?
 
@@ -107,13 +113,11 @@ do
    # '-S': sources a file
    # '-S' and '-c' are run at basically the same time
    # '--cmd' runs before anything else
-#      -c "highlight"
+   #      -c "highlight"
    vim --cmd 'let no_plugin_maps = 1' \
       -S '$VIMRUNTIME/syntax/hitest.vim' \
       -c "runtime! macros/less.vim" \
       -c "colorscheme ${SELECTED_COLOR}"
-      -c "background dark"
-
 
 done
 
