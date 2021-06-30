@@ -52,7 +52,7 @@ VIM_INSTALL=""
 for VIM_CHECK_PATH in $(echo $VIM_RUNTIME_PATHS);
 do
    if [ -d $VIM_CHECK_PATH ]; then
-      VIM_INSTALL_VER=$(ls $VIM_CHECK_PATH | grep '\d\{2\}$')
+      VIM_INSTALL_VER=$(ls $VIM_CHECK_PATH | egrep '[0-9]{2}$')
       VIM_PATH=${VIM_CHECK_PATH}/${VIM_INSTALL_VER}
       # use the first path that's found
       break
