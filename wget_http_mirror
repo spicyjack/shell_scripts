@@ -1,11 +1,11 @@
 #!/bin/sh
 
-SITE="http://www.lua.org/pil/"
+SITE="https://support.usr.com/support/3453c/3453c-ug/index.html"
 
 MIRROR_DIR=.
 
 wget -c -m --page-requisites --level=1 --wait 3 -nH \
---cut-dirs=1 -P$MIRROR_DIR --dot-style=binary $SITE 
+--cut-dirs=1 -P$MIRROR_DIR --dot-style=binary $SITE
 
 # -c continue retrieval
 # -m mirror == infinite recursion, timestamping, don't remove .listing files
