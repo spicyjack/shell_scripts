@@ -2,7 +2,6 @@
 
 # run Altirra under WINE
 ALTIRRA_HOME="/Users/brian/Working/Altirra/Current"
-ALTIRRA_PROFILE="IDEPlus_VBXE_SDX.2023-07-04"
 PROFILE_DIR="${HOME}/Working/Altirra/Profiles"
 export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}"
 
@@ -68,7 +67,7 @@ echo "Disk images command: ${ALTIRRA_DISK_CMDS}"
 #   profile, disk images to mount, etc.), and a possible portable INI file
 #   filename
 
-echo "Starting Altirra '${ALTIRRA_PROFILE}'..."
+echo "Starting Altirra '${ALTIRRA_PROFILE_NAME}'..."
 export WINEDEBUG="-all"
 ALTIRRA_CMD="$WINE64_BIN \
    ${ALTIRRA_HOME}/Altirra64.exe \
